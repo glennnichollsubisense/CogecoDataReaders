@@ -1,0 +1,5 @@
+Tag,X,Y,Name,Count,Option??,Length,Box
+red,2.334,66.7,North,4,TRUE,4.3,"3,2"
+green,5.666,7.888,South,3,FALSE,5.5 mm,"3,4"
+yellow,2.000,6.322,East,6,MAYBE,7.5 feet,"4,5"
+blue,5,8,West,2,false,8m,"2,3"

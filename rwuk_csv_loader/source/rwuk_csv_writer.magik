@@ -1,0 +1,113 @@
+#% text_encoding = iso8859_1
+# Copyright: Realworld OO Systems Ltd, St Andrew's House, Cambridge UK. 2011
+_package user
+$
+
+## Methods to write out tables as CSV files
+
+_pragma(classify_level=basic, topic={rwuk}, usage={external})
+_method ds_collection.rwuk_csv_write_to_file(file_name)
+	
+	## Write this collection to a tabbed text file
+
+	_local ouf
+	_protect
+		ouf << external_text_output_stream.new(file_name)
+
+		_local sep << ""
+		_for fld _over _self.record_exemplar.rwuk_csv!output_fields()
+		_loop ouf.write(sep^<<character.tab, fld.external_name)
+		_endloop
+		ouf.newline()
+
+		_local lino << 0
+		_for el _over _self.fast_elements() 
+		_loop
+			lino +<< 1
+			sep << ""
+			_for fld _over el.rwuk_csv!output_fields()
+			_loop ouf.write(sep^<<character.tab, el.rwuk_csv!field_value(fld).default(""))
+			_endloop
+			ouf.newline()
+		_endloop
+	_protection
+		ouf.close()
+	_endprotect
+
+_endmethod
+$
+
+_pragma(classify_level=basic, topic={rwuk}, usage={external})
+_iter _method ds_record.rwuk_csv!output_fields()
+	
+	## Yield fields for output (mostly physical)
+	# TODO: join fields
+
+	_for fld _over _self.physical_fields()
+	_loop
+		_if fld.name _is :ds!version _orif
+		    fld.name _is :rwo_id     _orif
+		    fld.name.index_of_seq(:dd!) _is 1 _orif
+		    (fld.is_key? _andif fld.generator _isnt _unset)
+		_then # skip 
+		_else _loopbody(fld)
+		_endif
+	_endloop
+	
+_endmethod
+$
+
+_pragma(classify_level=basic, topic={rwuk}, usage={external})
+_method ds_record.rwuk_csv!field_value(fld)
+	
+	## Return value for field FLD
+	# TODO: join fields
+
+	_return _self.perform(fld.name)
+	
+_endmethod
+$
+
+_pragma(classify_level=basic, topic={rwuk}, usage={external})
+_iter _method mit_common_spec_data_record.rwuk_csv!output_fields()
+	
+	## Yield fields for output (mostly physical)
+	## subclassed for Specifications
+
+	_local spex << _self.source_view.spec_table.record_exemplar
+
+	# make these the first two columns
+	_loopbody(spex.field(:name))
+	_loopbody(spex.field(:manufacturer_id))
+	
+	_for fld _over _super(mit_user_ds_record).rwuk_csv!output_fields()
+	_loop
+		_if fld.name _is :id _then _continue _endif
+		_loopbody(fld)
+	_endloop
+
+	_for fld _over spex.rwuk_csv!output_fields()
+	_loop
+		_if fld.name _is :name            _orif
+		    fld.name _is :manufacturer_id _orif
+		    fld.name _is :id              _orif
+		    fld.name _is :spec_entity_id
+		_then _continue _endif
+		_loopbody(fld)
+	_endloop
+	
+_endmethod
+$
+
+_pragma(classify_level=basic, topic={rwuk}, usage={external})
+_method mit_common_spec_data_record.rwuk_csv!field_value(fld)
+	
+	## Return value for field FLD
+
+	_if fld.owner.name _is :spec 
+	_then _return _self.spec_record.perform(fld.name)
+	_else _return _self.perform(fld.name)
+	_endif
+	
+_endmethod
+$

@@ -1,0 +1,272 @@
+#% text_encoding = iso8859_1
+# Copyright: Realworld OO Systems Ltd, St Andrew's House, Cambridge UK. 2011
+_package user
+$
+
+_pragma(classify_level=basic, topic={rwuk}, usage={subclassable})
+_method mit_common_spec_data_record.rwuk!csv_insert_values(fields, values)
+
+	## Insert a record based on this record_exemplar with FIELDS
+	## set to VALUES (actual values, or strings to be converted to
+	## field-type values), returning the new record
+	##
+	## Subclassed for special Specification behaviour; FIELDS will
+	## contain fields for both the Object Spec & the Common Spec
+	## collections, since Specs consist of two records associated
+	## by a common ID field value
+	
+	# Note: if this is a record for a new Specification collection,
+	# suitable spec_entity & spec_class records must have been
+	# previously created, in order to populate the enumerator of
+	# the :spec_entity_id field, which is set in the new_with()
+	# method
+	
+	# split field values into two lists
+	#   object spec (eg uub_spec)
+	#   common spec (ie spec table)
+	_local common_spec_table << _self.source_view.spec_table
+	_local object_spec_table << _self.source_collection
+	_local object_spec_field_values << hash_table.new()
+	_local common_spec_field_values << hash_table.new()
+	_local spec_group_name << _unset
+	
+	# loop over all fields
+	_for i,field _over fields.fast_keys_and_elements()
+	_loop
+		_if field _is :csv!skip
+		_then _continue 
+		_endif
+		
+		# trailing field values missing
+		_if i > values.size
+		_then _continue 
+		_endif
+
+		# get value for this field 
+		_local value << values[i]
+
+		# Spec Group is special (see below)
+		_if field.name _is :spec_group
+		_then
+			spec_group_name << value
+			_continue  
+		_endif
+
+		_if value = "" _orif
+		    value _is _unset 
+		_then
+			# blank data - apply default/unset value
+			_if   field.default_value _isnt _unset 
+			_then value << field.default_value
+			_elif field.unset_value _isnt _unset 
+			_then value << field.unset_value
+			#_else value << field.value_from_string(value.default(""))
+			_endif 
+		_endif
+
+		# convert value to appropriate type for field
+		_if   (enum << field.type.enumerator) _isnt _unset
+		_then
+			# enumerated field - adjust value to matching entry (tolerating
+			# case & space differences), and report invalid values
+			_if enum.sorted_values.an_element().is_class_of?("")
+			_then
+				_local enum_value << _unset
+				_local value_string << value.write_string.trim_spaces()
+				_for eval _over enum.sorted_values.fast_elements() 
+				_loop
+					# fix case of supplied value (UNKNOWN=>Unknown etc)
+					_if eval.trim_spaces()           = value_string _orif 
+					    eval.trim_spaces().lowercase = value_string.lowercase
+					_then enum_value << eval; _leave 
+					_endif
+					# supplied values could be numeric for string enum
+					_if   value.is_class_of?(1) _andif 
+					      eval.as_integer() = value
+					_then enum_value << eval; _leave 
+					_elif value.is_class_of?(1.0) _andif 
+					      eval.as_number() = value
+					_then enum_value << eval; _leave 
+					_endif
+				_endloop
+				_if   enum_value _isnt _unset 
+				_then
+					value << enum_value
+				_elif field.name _is :manufacturer_id
+				_then
+					# leave value as-is - it'll get created
+				_else
+					condition.raise(
+						:error, :string,
+						write_string("Value ",value,
+							     " not in enumerator for ",
+							     field.external_name))
+				_endif
+			_endif
+		_elif value.is_kind_of?("")
+		_then 
+			# convert value from string to correct field type
+			value << field.value_from_string(value)
+		_else
+			# value is non-string, coerce to correct type
+			_local field_class << field.type.element_class
+			_if   field_class.is_class_of?("") _orif 
+			      field_class.is_class_of?(%A)
+			_then value << value.write_string
+			_elif field.stored_unit _isnt _unset _andif
+			      value.is_kind_of?(unit_value)
+			_then # OK
+			_else value << field_class.check_type(value)
+			_endif
+		_endif
+
+		# add value to appropriate list
+		_if field.owner.name _is :spec
+		_then
+			common_spec_field_values[field.name] << value
+			_if field.name _is :manufacturer_id
+			_then _self.rwuk!csv_check_manufacturer(value)
+			_endif
+		_else 
+			object_spec_field_values[field.name] << value
+		_endif
+	_endloop
+
+	# check that this Spec doesn't already exist
+	_local duplicate_pred <<
+		predicate.eq(:spec_entity_id, _self.source_collection.name,     :ci) _and
+		predicate.eq(:name,           common_spec_field_values[:name ], :ci)
+	_if _not common_spec_table.select(duplicate_pred).empty?
+	_then
+		# return after warning
+		condition.raise(:warning, :string,
+				write_string(_self.source_collection.external_name,
+					     " record already exists: ", 
+					     common_spec_field_values[:name]))
+		_return 
+	_endif
+
+	# fill in some suitable values, if not supplied
+	_if _not common_spec_field_values.includes_key?(:usable)
+	_then common_spec_field_values[:usable] << _true 
+	_endif
+
+	# set defaults for missing fields
+	_for fn _over common_spec_table.physical_field_names()
+	_loop
+		_local fld << common_spec_table.field(fn)
+		_if _not common_spec_field_values.includes_key?(fn) _andif  
+		    fld.default_value _isnt _unset 
+		_then common_spec_field_values[fn] << fld.default_value
+		_endif 
+	_endloop 
+	_for fn _over object_spec_table.physical_field_names()
+	_loop
+		_local fld << object_spec_table.field(fn)
+		_if _not object_spec_field_values.includes_key?(fn) _andif  
+		    fld.default_value _isnt _unset 
+		_then object_spec_field_values[fn] << fld.default_value
+		_endif 
+	_endloop 
+
+	# create the combined spec object
+	_dynamic !current_dsview! << _self.source_view
+	new_rec << _self.new_with(object_spec_field_values, common_spec_field_values)
+	_if new_rec _is _unset 
+	_then
+		condition.raise(:warning, :string,
+				write_string("Insert failed for ",
+					     _self.source_collection.external_name,
+					     ", Name: ", common_spec_field_values[:name]))
+		_return
+	_endif
+
+	# add new Spec record to a Spec Group (if supplied), to make
+	# the Specs available for use, creating the Group if required
+	_if spec_group_name _isnt _unset 
+	_then
+		_local a_spec_group << _self.rwuk!csv_check_spec_group(spec_group_name)
+		_if a_spec_group _isnt _unset 
+		_then a_spec_group.add_specs({new_rec})
+		_endif
+	_endif
+	
+	_return new_rec 
+	
+_endmethod
+$
+
+_pragma(classify_level=basic, topic={rwuk}, usage={subclassable})
+_method mit_common_spec_data_record.rwuk!csv_check_manufacturer(name)
+	
+	## Check that a Manufacturer record called NAME exists, insert
+	## a new record if not
+	##
+	## Returns existing or new record
+
+	man_tab << _self.source_view.collections[:manufacturer]
+	pred << predicate.eq(:name, name)
+	_if (man_rec << man_tab.select(pred).an_element()) _is _unset 
+	_then
+		man_rec << man_tab.new_detached_record()
+		man_rec.id   << man_rec.make_unique_id()
+		man_rec.name << name
+		man_rec << man_tab.insert(man_rec)
+	_endif
+
+	_return man_rec
+	
+_endmethod
+$
+
+_pragma(classify_level=basic, topic={rwuk}, usage={subclassable})
+_method mit_common_spec_data_record.rwuk!csv_check_spec_group(spec_group_name)
+
+	## Check that the SPEC_GROUP_NAME exists, or create it
+	
+	# TODO: make name comparison punctuation-tolerant
+	_local spec_group_tab << _self.source_view.collections[:spec_group]
+	# get existing Spec Group
+	_local a_spec_group << spec_group_tab.
+			       select(predicate.eq(:name, spec_group_name, :ci)).
+			       an_element()
+	_if a_spec_group _is _unset 
+	_then
+		# new Spec Group required, create it
+		_local det << spec_group_tab.new_detached_record()
+		det.name   << spec_group_name
+		det.usable << _true
+		det.id     << det.make_unique_id()
+		a_spec_group << spec_group_tab.insert(det)
+	_endif
+
+	_return a_spec_group 
+	
+_endmethod
+$
+
+_pragma(classify_level=basic, topic={rwuk}, usage={subclassable})
+_iter _method mit_common_spec_data_record.rwuk!csv_fields()
+      
+	## Yield fields to be matched against the CSV columns
+	##
+	## Sub-classed for Spec behaviour - yields fields from both
+	## Object Spec & Common Spec tables, plus some Spec-loading
+	## specials
+
+	_for fld _over _self.physical_fields()
+	_loop _loopbody(fld)
+	_endloop
+      
+	_for fld _over _self.source_view.spec_table.physical_fields()
+	_loop _loopbody(fld)
+	_endloop
+
+	# dummy field - handled specially
+	sg_field << uds_phys_field.new(:spec_group, _unset)
+	sg_field.sys!perform(:owner|<<|, _self.source_collection.descriptor)
+	sg_field.external_name << "Spec Group"
+	_loopbody(sg_field)
+
+_endmethod
+$

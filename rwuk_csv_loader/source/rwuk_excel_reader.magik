@@ -1,0 +1,406 @@
+#% text_encoding = iso8859_1
+# Copyright: Realworld OO Systems Ltd, St Andrew's House, Cambridge UK. 2011
+_package user
+$
+
+## Excel spreadsheet reading utilities
+##
+## An Excel spreadsheet-reader class is used, with various
+## methods provided to populate collections (both Magik &
+## database)
+
+
+_pragma(classify_level=basic, topic={rwuk, excel}, usage={external})
+
+## Reader for EXCEL spreadsheet files (mostly for data loading)
+
+def_slotted_exemplar(:rwuk_excel_reader,
+	{
+		{:opened_excel, _unset, :readable},
+		{:sheet_name_or_number,  1}
+	},
+	:rwuk_csv_reader)
+$
+_pragma(classify_level=basic, topic={rwuk, excel}, usage={external})
+rwuk_excel_reader.define_slot_access(
+	## Selected sheet name_or_number
+	:sheet_name_or_number, :writable, :public)
+$
+
+
+# ==============================================================================
+# 				 INITIALISATION
+# ==============================================================================
+
+_pragma(classify_level=basic, topic={rwuk, excel}, usage={external})
+_method rwuk_excel_reader.new_from(file_name, _gather exemplars)
+	
+	## Create a new reader for an Excel spreadsheet file
+
+	_return _clone.init(file_name, exemplars)
+	
+_endmethod
+$
+_pragma(classify_level=basic, topic={rwuk, excel}, usage={external})
+_method rwuk_excel_reader.sheet_number << number
+	## Select worksheet by number
+	_return _self.sheet_name_or_number << number
+_endmethod
+$
+_pragma(classify_level=basic, topic={rwuk, excel}, usage={external})
+_method rwuk_excel_reader.sheet_number
+	## Return selected worksheet number
+	_return _self.sheet_name_or_number
+_endmethod
+$
+_pragma(classify_level=basic, topic={rwuk, excel}, usage={external})
+_method rwuk_excel_reader.sheet_name << name
+	## Select worksheet by name
+	_return _self.sheet_name_or_number << name
+_endmethod
+$
+_pragma(classify_level=basic, topic={rwuk, excel}, usage={external})
+_method rwuk_excel_reader.sheet_name
+	## Return selected worksheet name
+	_return _self.sheet_name_or_number
+_endmethod
+$
+
+_pragma(classify_level=basic, topic={rwuk, excel}, usage={external})
+_method rwuk_excel_reader.open()
+	
+	## Open the Excel for multiple work-sheet access
+
+	.opened_excel << excel.new()
+	.opened_excel.open_for_reading(_self.file_name)
+
+_endmethod
+$
+_pragma(classify_level=basic, topic={rwuk, excel}, usage={external})
+_method rwuk_excel_reader.close()
+	
+	## Close the Excel for multiple work-sheet access
+
+	.opened_excel.close()
+	.opened_excel << _unset 
+
+_endmethod
+$
+
+
+# ==============================================================================
+# 				INTERNAL METHODS
+# ==============================================================================
+
+_pragma(classify_level=basic, topic={rwuk, excel}, usage={external})
+_iter _method rwuk_excel_reader.lines()
+	
+	## Yield succesive rows from worksheet, as ropes of values
+
+	_local xl
+	_protect
+		_if (xl << .opened_excel) _is _unset 
+		_then
+			xl << excel.new()
+			xl.open_for_reading(_self.file_name)
+		_endif
+
+		_if _self.sheet_name_or_number.is_class_of?(1)
+		_then xl.get_sheet_by_number(_self.sheet_name_or_number)
+		_else xl.get_sheet_by_name  (_self.sheet_name_or_number)
+		_endif 
+
+		# end-of-row is deemed to be 10 consecutive unset cells, though
+		# a high-water mark is used so that sequences of unsets in the
+		# middle of rows are handled
+		_local hwm << 0
+		# end-of-data is deemed to be 10 consecutive empty rows (to
+		# allow blank lines to break up input data)
+		_local empty_row_count << 0
+		# TODO: get data range extents from Excel
+		
+		_for row _over 1.upto(9999) # safety limit
+		_loop
+			_local all_blank? << _true 
+			# read values from row
+			_local vals << rope.new()
+			_for col _over 1.upto(99) # safety limit
+			_loop
+				_local cell << xl.current_sheet.cells(row,col)
+				_local val << cell.Value
+				_if   val.is_kind_of?("")
+				_then
+					val << val.trim_spaces()
+					all_blank? _and<< val.empty?
+				_elif val.is_kind_of?(1.0)
+				_then
+					# if no decimal places, convert to integer (could check
+					# cell.NumberFormat = "0", but some data is "General")
+					_local (i,f) << val.integral_and_fraction()
+					_if f = 0.0
+					_then val << i
+					_endif
+					all_blank? << _false
+				_elif val _isnt _unset
+				_then 
+					all_blank? << _false
+				_endif 
+				vals.add_last(val)
+				_if   col > hwm+10
+				_then _leave
+				_elif val _isnt _unset  
+				_then hwm << hwm.max(col)
+				_endif
+			_endloop
+			# prune trailing _unset values
+			_loop
+				_if   vals.empty? 
+				_then _leave
+				_elif vals.last _isnt _unset 
+				_then _leave
+				_else vals.remove_last()
+				_endif 
+			_endloop
+			# stop after a few blank lines
+			_if vals.empty? _orif all_blank?
+			_then
+				_if (empty_row_count +<< 1) > 10
+				_then _leave
+				_else # continue to next row
+				_endif
+			_else
+				# turn empty cell values to null strings
+				vals << vals.map(_proc @rwuk_excel_null_string(e) >> e.default("") _endproc)
+				# yield result
+				_loopbody(vals, row)
+				empty_row_count << 0
+			_endif 
+		_endloop
+	_protection
+		_if .opened_excel _is _unset 
+		_then xl.close()
+		_endif 
+	_endprotect
+	
+_endmethod
+$
+
+# ==============================================================================
+# 				UTILITY METHODS
+# ==============================================================================
+
+_pragma(classify_level=basic, topic={rwuk, excel}, usage={external})
+_method externally_keyed_collection_mixin.rwuk_new_from_excel(file_name, sheet_name_or_number, _gather exemplars)
+	
+	## Create a keyed-collection (property_list, hash_table,
+	## equality_property_list, equality_hash_table,...) from an
+	## EXCEL spreadsheet file
+
+	exemplars << rope.new_from(exemplars)
+
+	# add the key exemplar, which will be symbol for identity-keyed
+	# collections and string for equality-keyed collections
+	_if _self.class_name.write_string.matches?("equality_*")
+	_then exemplars.add_first("string")
+	_else exemplars.add_first(:symbol)
+	_endif
+
+	_local xl << rwuk_excel_reader.new_from(file_name, _scatter exemplars)
+	xl.sheet_name_or_number << sheet_name_or_number.default(1)
+	result << _self.new()
+	max_nfields << 0
+	_for rec _over xl.records()
+	_loop
+		_local key << rec.remove_first()
+		result[key] << rec
+		max_nfields << max_nfields.max(rec.size)
+	_endloop
+	# if only one column, narrow to single value
+	_if max_nfields = 1
+	_then
+		_for key,val _over result.fast_keys_and_elements()
+		_loop result[key] << val.an_element() 
+		_endloop
+	_endif
+	_return result 
+	
+_endmethod
+$
+
+_pragma(classify_level=basic, topic={rwuk, excel}, usage={external})
+_method rope_mixin.rwuk_new_from_excel(file_name, _gather exemplars)
+	
+	## Create a rope (or sub-class) from a EXCEL spreadsheet file
+
+	a_reader << rwuk_excel_reader.new_from(file_name, _scatter exemplars)
+
+	result << _self.new()
+	max_nfields << 0
+	_for rec _over a_reader.records()
+	_loop
+		result.add_last(rec)
+		max_nfields << max_nfields.max(rec.size)
+	_endloop
+	# if only one column, narrow to single value
+	_if max_nfields = 1
+	_then
+		_for key,val _over result.fast_keys_and_elements()
+		_loop result[key] << val.an_element() 
+		_endloop
+	_endif
+	_return result 
+	
+_endmethod
+$
+
+_pragma(classify_level=basic, topic={rwuk, excel}, usage={external})
+_method add_collection_mixin.rwuk_new_from_excel(file_name, _gather exemplars)
+	
+	## Create a set, equality_set, sorted_collection etc from a
+	## EXCEL spreadsheet file
+
+	# get data into a rope; if only one column, then it will have
+	# had the values narrowed; then convert that into our class
+	_return _self.new_from(rope.rwuk_new_from_excel(file_name, _scatter exemplars))
+	
+_endmethod
+$
+
+
+# ==============================================================================
+# 		  DATABASE LOADING - CONFIG RECORDS, SPECS ETC
+# ==============================================================================
+
+_pragma(classify_level=basic, topic={rwuk, excel}, usage={external})
+_method ds_collection.rwuk_load_from_excel(file_name, _optional sheet_name_or_number, field_names)
+	
+	## Load an Excel worksheet into this table, using the column
+	## headings to define the field names, unless the FIELD_NAMES
+	## parameter is supplied.
+	##
+	## Field names should be the internal field name, although
+	## external names can be used, case & punctuation are ignored.
+
+	# TODO: option to skip column-headings
+
+	_local xl << rwuk_excel_reader.new_from(file_name)
+	xl.sheet_name_or_number << sheet_name_or_number.default(1)
+
+	# use supplied field-name list
+	_if field_names _isnt _unset
+	_then fields << _self.record_exemplar.rwuk!csv_get_fields(field_names)
+	_endif 
+
+	_local ndone << 0
+	_for values,lino _over xl.records()
+	_loop
+		# if no supplied field-names, use column headers on row 1
+		_if field_names _is _unset _andif lino = 1
+		_then
+			fields << _self.record_exemplar.rwuk!csv_get_fields(values)
+		_else
+			_try _with cond
+				_local det << _self.new_detached_record()
+				_local ins << det.rwuk!csv_insert_values(fields, values)
+				_if ins _isnt _unset _then ndone +<< 1 _endif 
+			_when error
+				cond.report_on(!output!)
+				write(lino, ": ", write_string_with_separator(values,", "))
+			_endtry
+		_endif 
+	_endloop
+	_return ndone
+	
+_endmethod
+$
+
+_pragma(classify_level=basic, topic={rwuk, excel}, usage={external})
+_method rwuk_excel_reader.rwuk_load_from_spreadsheet(a_view, file_name, _optional checkpoint_tag)
+	
+	## Load database collections in A_VIEW from the worksheets in
+	## Excel workbook FILE_NAME, using the sheet names to identify
+	## the target collections (sheets such as "Intro", will be
+	## ignored with warnings)
+	##
+	## B4 & AF checkpoints will be created from the supplied
+	## CHECKPOINT_TAG, if supplied
+
+	# get tables from worksheet names
+	_local tables << rope.new()
+	_local xl
+	_protect
+		xl << excel.new()
+		xl.open_for_reading(file_name)
+		_for num _over 1.upto(xl.sheets_count())
+		_loop
+			xl.get_sheet_by_number(num)
+			_local sht << xl.current_sheet
+
+			# skip intro page
+			_if sht.name = "README"  _orif 
+			    sht.name = "READ ME" _orif 
+			    sht.name = "Intro"
+			_then
+				tables.add_last(_unset)
+				_continue
+			_endif
+			
+			# if spec-loading, then try appending "Spec" to name first
+			_local tab << _unset 
+			_for sfx _over {" Spec", ""}.fast_elements() # FIXME
+			_loop
+				_local sheet_name   << write_string(sht.name, sfx)
+				_local sheet_crunch << _self.crunch(sheet_name)
+				_local rdr << _self
+				# get table by name or external name
+				_if (tab << a_view.collections[sheet_name  .lowercase.as_symbol()]) _isnt _unset _orif
+				    (tab << a_view.collections[sheet_crunch.as_symbol()])           _isnt _unset
+				_then
+					# OK - found the table
+				_else
+					# search by external name
+					_for ttt _over a_view.collections.fast_elements() 
+					_loop
+						_local ext_name   << ttt.external_name
+						_local ext_crunch << _self.crunch(ext_name)
+						_if ext_name   = sheet_name _orif
+						    ext_crunch = sheet_name _orif 
+						    ext_crunch = sheet_crunch
+						_then
+							tab << ttt
+							_leave 
+						_endif
+					_endloop
+				_endif
+				_if tab _isnt _unset
+				_then _leave _endif
+			_endloop
+			_if tab _is _unset
+			_then condition.raise(:warning, :string,
+					      write_string("No collection found for sheet: ", sht.name))
+			_endif
+			tables.add_last(tab)
+		_endloop
+	_protection
+		xl.close()		
+	_endprotect
+
+	_if checkpoint_tag _isnt _unset 
+	_then a_view.checkpoint("B4 "+checkpoint_tag)
+	_endif
+
+	# load in each table
+	_for num,tab _over tables.fast_keys_and_elements() 
+	_loop
+		_if tab _is _unset _then _continue _endif
+		write("Loading: ", tab.external_name)
+		_local n << tab.rwuk_load_from_excel(file_name, num)
+		write("   ", n, " records loaded") 
+	_endloop
+	
+	_if checkpoint_tag _isnt _unset 
+	_then a_view.checkpoint("AF "+checkpoint_tag)
+	_endif
+	
+_endmethod
+$

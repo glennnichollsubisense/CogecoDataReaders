@@ -1,0 +1,13 @@
+Name,Manufacturer,Spec Group,Number of Sides,Length,Width,Depth,Usable
+Test-MR3,Realworld,Test,4,305.000 mm,122.000 mm,183.000 mm,TRUE
+Test-MR4,Realworld,Test,4,396.000 mm,122.000 mm,183.000 mm,TRUE
+Test-MR5,Realworld,Test,4,290.000 mm,183.000 mm,183.000 mm,TRUE
+Test-MR1,Realworld,Test,4,255.000 mm,210.000 mm,183.000 mm,TRUE
+Test-MR2,Realworld,Test,4,338.000 mm,274.000 mm,244.000 mm,TRUE
+Test-MR6,Realworld,Test,4,351.000 mm,229.000 mm,183.000 mm,TRUE
+Test-MR7,Realworld,Test,4,290.000 mm,152.000 mm,183.000 mm,TRUE
+Test-MR8,Realworld,Test,4,351.000 mm,183.000 mm,183.000 mm,TRUE
+Unknown,Unknown,Test,4,,,,TRUE
+Cross Connect test,Ubisense,Test,4,77.500 mm,60.000 mm,65.000 mm,TRUE
+DSLAM test,Ubisense,Test,4,,,,TRUE
+FMUX test,Ubisense,Test,4,180.400 mm,68.000 mm,,TRUE

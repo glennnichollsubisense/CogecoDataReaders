@@ -1,0 +1,63 @@
+#% text_encoding = iso8859_1
+# Copyright: Realworld OO Systems Ltd, St Andrew's House, Cambridge UK. 2011
+_package user
+$
+
+## Script to load Cabinets from CSV
+
+_block
+	## Cabinet-loading from tabbed file
+
+	_local gis_view        << mit_manager.main_pni_dataset
+	_local template_view   << gis_view.template_view
+	_local template_name   << "Cabinet (Cross-Connect)"
+	_local template_table  << template_view.collections[:mit_terminal_enclosure]
+	_local template_record << template_table.
+				  select(predicate.eq(:name, template_name, :ci)).
+				  an_element()
+	_if template_record _is _unset 
+	_then
+		write("Cabinet template: ", template_name, " not found")
+		_leave  
+	_endif
+	
+	_local cs_malta << gis_view.world.coordinate_system
+	_local cs_wgs84 << gis_view.coordinate_system("world_longlat_wgs84_degree" )
+	_local tr << transform.new_converting_cs_to_cs(cs_wgs84, cs_malta)
+	
+	_local csv << rwuk_csv_reader.new_from_csv(
+			      "Cabinets.csv", 0.0,0.0,"")
+	_local line_number << 0
+	_for xp,yp,name _over csv.values()
+	_loop
+		_if (line_number+<<1) _mod 10 = 0
+		_then
+			write(line_number)
+			#gis_view.commit()
+		_endif
+		#_if line_number > 99_then _leave _endif
+		
+		_if xp.default(0) < 1 _andif yp.default(0) < 1
+		_then
+			write(name, ": ", "zero coords")
+		_else
+			# suppress annoying information message
+			_handling db_create__created_world
+			_with _proc(cond) _endproc
+			
+			_local ins << template_record.template_clone(
+					      "Cross-Connect", :gis,
+					      coordinate(xp, yp).transformed(tr),
+					      _unset, gis_view.world)
+			_if ins _is _unset 
+			_then
+				write(name, ": ", "not loaded")
+			_else
+				ins.name << name
+			_endif
+		_endif
+		#_leave 
+	_endloop
+	
+_endblock
+$

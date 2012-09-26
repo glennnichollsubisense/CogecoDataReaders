@@ -1,0 +1,160 @@
+#% text_encoding = iso8859_1
+# Copyright: Ubisense Ltd, St Andrew's House, Cambridge UK, 2012
+_package user
+$
+
+## Special data-loading methods
+
+_pragma(classify_level=basic, topic={rwuk}, usage={subclassable})
+_method bundle_color_fiber_color_number.rwuk!csv_insert_values(fields, values)
+
+	## Insert a record for this record_exemplar with FIELDS set to
+	## VALUES (actual values, or strings to be converted to
+	## field-type values), returning the new record
+	##
+	## Subclassed for special bundle_color_fiber_color_number behaviour
+	
+	_local props << property_list.new()
+	_for i,field _over fields.fast_keys_and_elements()
+	_loop
+		_if field _is :csv!skip
+		_then _continue 
+		_endif
+		
+		# trailing field values missing
+		_if i > values.size
+		_then _continue 
+		_endif
+
+		# get value for this field 
+		_local value << values[i]
+
+		_if   field.name _is :fiber_number_schemes
+		_then
+			# lookup joined records - should only be one
+			# (NB: field's join_aspect is missing)
+			_local target  << field.result_table
+			_local pred    << predicate.eq(:name, value, :ci)
+			value << rope.new_from(target.select(pred))
+			_if value.empty?
+			_then
+				condition.raise(:error, :string,
+						write_string("Fiber Number Scheme: ",
+							     value, " not found"))
+			_endif
+		_elif field.name _is :number
+		_then
+			# this may be a float if from Excel - the :number field is a
+			# text field(!)
+			value << integer.check_type(value).write_string
+		_elif field.is_physical?
+		_then
+			# Physical field...
+			_if value = "" _orif
+			    value _is _unset 
+			_then
+				# blank data - apply default/unset value
+				_if   field.default_value _isnt _unset 
+				_then value << field.default_value
+				_elif field.unset_value _isnt _unset 
+				_then value << field.unset_value
+				_else value << field.value_from_string(value.default(""))
+				_endif 
+			_endif
+			
+			# convert value to appropriate type for field
+			_if   (enum << field.type.enumerator) _isnt _unset
+			_then
+				# enumerated field - adjust value to matching entry (tolerating
+				# case & space differences), and report invalid values
+				_if enum.sorted_values.an_element().is_class_of?("")
+				_then
+					_local enum_value << _unset
+					_local value_string << value.write_string.trim_spaces()
+					_for eval _over enum.sorted_values.fast_elements() 
+					_loop
+						# fix case of supplied value (UNKNOWN=>Unknown etc)
+						_if eval.trim_spaces()           = value_string _orif 
+						    eval.trim_spaces().lowercase = value_string.lowercase
+						_then enum_value << eval; _leave 
+						_endif
+						# supplied values could be numeric for string enum
+						_if   value.is_class_of?(1) _andif 
+						      eval.as_integer() = value
+						_then enum_value << eval; _leave 
+						_elif value.is_class_of?(1.0) _andif 
+						      eval.as_number() = value
+						_then enum_value << eval; _leave 
+						_endif
+					_endloop
+					_if   enum_value _isnt _unset 
+					_then
+						value << enum_value
+					_else
+						condition.raise(
+							:error, :string,
+							write_string("Value ",value,
+								     " not in enumerator for ",
+								     field.external_name))
+					_endif
+				_endif
+			_elif value.is_kind_of?("")
+			_then 
+				# convert value from string to correct field type
+				value << field.value_from_string(value)
+			_else
+				# value is non-string, coerce to correct type
+				_local field_class << field.type.element_class
+				_if field_class.is_class_of?("") _orif 
+				    field_class.is_class_of?(%A)
+				_then value << value.write_string
+				_elif field.stored_unit _isnt _unset _andif
+				      value.is_kind_of?(unit_value)
+				_then # OK
+				_else value << field_class.check_type(value)
+				_endif
+			_endif
+		_endif
+		
+		props[field.name] << value
+	_endloop
+	
+	# supply defaults for missing fields
+	_for fn _over _self.physical_field_names()
+	_loop
+		_local a_field << _self.field(fn)
+		_if _not props.includes_key?(fn) _andif  
+		    a_field.mandatory?           _andif 
+		    a_field.default_value _isnt _unset 
+		_then props[fn] << a_field.default_value
+		_endif 
+	_endloop 
+
+	# see if a record already exists
+	_local pred << predicate.eq(:number,              props[:number])         _and
+		       predicate.eq(:bundle_color,        props[:bundle_color])   _and
+		       predicate.eq(:fiber_color,         props[:fiber_color])    _and
+		       predicate.eq(:parent_bundle_color, props[:parent_bundle_color])
+	_if (old << _self.source_collection.select(pred).an_element()) _isnt _unset 
+	_then
+		# record exists - add the numbering scheme to it
+		old.fiber_number_schemes.add_all(props[:fiber_number_schemes])
+	_else
+		# need to create a new record
+		_local trans << record_transaction.new_insert(_self.source_collection,
+							      props)
+		new_rec << trans.run()
+		_if new_rec _is _unset 
+		_then
+			condition.raise(:warning, :string,
+					write_string("Insert failed for ", _self.source_collection.name,
+						     write_string_with_separator(values, ", ")))
+		_endif
+	_endif
+	
+	# (post-insert actions - joins, geometry etc)
+
+	_return new_rec 
+	
+_endmethod
+$

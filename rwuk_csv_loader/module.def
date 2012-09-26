@@ -1,0 +1,10 @@
+#% text_encoding = iso8859_1
+
+rwuk_csv_loader	1
+
+description
+	CSV and Excel spreadhseet loader
+end
+
+requires
+end

@@ -1,0 +1,100 @@
+#% text_encoding = iso8859_1
+# Copyright: Ubisense Ltd, St Andrew's House, Cambridge UK, 2012
+_package user
+$
+
+## Data-loading demo scripts - use F2<enter> in each block
+
+load_file_stop() # stop F2-b
+$
+_block
+	## Load module
+
+	sw_module_manager.load_module(:rwuk_csv_loader)
+	
+_endblock
+$
+
+_block
+	## CSV reading (for data-loading scripts etc)
+
+	# NB: header row will generate error messages
+	
+	_local csv_file << smallworld_product.get_data_file("data.csv", :rwuk_csv_loader)
+
+	_local rdr << rwuk_csv_reader.
+		      new_from_csv(csv_file,
+				   :symbol, 0.0,0.0, "name", 1, _maybe,
+				   unit_value.new(1, :cm), # data converted to CM
+				   pixel_coordinate)       # quoted field with comma
+	_for tag,x,y,nam,j,m??,u,box _over rdr.values()
+	_loop
+		show(tag,x,y,nam,j,m??,u,box)
+	_endloop
+		
+_endblock
+$
+
+_block
+	## Magik collection creation (for data initialisation, shared-constants etc)
+
+	# NB: header row will generate error messages
+
+	_local csv_file << smallworld_product.get_data_file("data.csv", :rwuk_csv_loader)
+
+	# Tag field is automatically converted to symbol key
+	_local pl << property_list.rwuk_new_from_csv(
+			     csv_file,
+			     0.0,0.0, "name", 1, _maybe,
+			     unit_value.new(1, :cm).dimensionality, # uses source data unit
+			     pixel_coordinate)
+	write()
+	show(pl)
+	_for key,val _over pl.fast_keys_and_elements()
+	_loop show(key, write_string_with_separator(val, ", ", "{","}"))
+	_endloop
+	
+_endblock
+$
+
+_block
+	## Data-reading as property_lists
+
+	# NB: keys are set from column headers
+
+	_local csv_file << smallworld_product.get_data_file("data.csv", :rwuk_csv_loader)
+
+	_local rdr << rwuk_csv_reader.new_from_csv(
+			      csv_file,
+			      :symbol, 0.0,0.0, "name", 1, _maybe,
+			      unit_value.new(1, :cm),
+			      pixel_coordinate)
+	rdr.row_exemplar << property_list
+	_for val _over rdr.records()
+	_loop print(val)
+	_endloop
+	
+_endblock
+$
+
+_block
+	## Specification loading
+
+	# You must close the Specification Association GUI before
+	# running these loaders, otherwise you'll get errors
+
+	_local tv << gis_program_manager.cached_dataset(:template)
+
+	tv.switch(:write)
+
+	_local tab
+	_local csv_file << smallworld_product.get_data_file("uub_spec.csv", :rwuk_csv_loader)
+	tab << tv.collections[:uub_spec]
+	tab.rwuk_load_from_csv(csv_file)
+
+	_local xls_file << smallworld_product.get_data_file("copper_cable_spec.xlsx", :rwuk_csv_loader)
+	tab << tv.collections[:copper_cable_spec]
+	tab.rwuk_load_from_csv(xls_file)
+
+_endblock
+$

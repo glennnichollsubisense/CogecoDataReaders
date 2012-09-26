@@ -1,0 +1,976 @@
+#% text_encoding = iso8859_1
+# Copyright: Realworld OO Systems Ltd, St Andrew's House, Cambridge UK. 2011
+_package user
+$
+
+## CSV & tabbed-file reading utilities
+##
+## A file-reader class is used, with various methods provided
+## on collections (both Magik & database)
+
+# TODO: export class & methods
+
+_pragma(classify_level=basic, topic={rwuk})
+
+## Reader for CSV or tabbed text files
+##
+## Various methods to read source files (mainly for data import)
+
+def_slotted_exemplar(:rwuk_csv_reader,
+	{
+		{:file_name,      _unset, :writable},
+		{:separator,      _unset, :writable},
+		{:exemplars,      _unset, :writable},
+		{:column_headers, _unset, :writable},
+		{:row_exemplar,   _unset, :writable}
+	})
+$
+_pragma(classify_level=basic, topic={rwuk})
+rwuk_csv_reader.define_slot_access(
+	## Input file name
+	:file_name, :readable, :public)
+$
+_pragma(classify_level=basic, topic={rwuk})
+rwuk_csv_reader.define_slot_access(
+	## Field separator (tab, comma,...)
+	:separator, :writable, :public)
+$
+_pragma(classify_level=basic, topic={rwuk})
+rwuk_csv_reader.define_slot_access(
+	## Column exemplars (integer, string, date,...)
+	:exemplars, :readable, :public)
+$
+_pragma(classify_level=basic, topic={rwuk})
+rwuk_csv_reader.define_slot_access(
+	## Optional row exemplar (rope, simple_vector, property_list,...)
+	:row_exemplar, :writable, :public)
+$
+
+
+# ==============================================================================
+# 				 INITIALISATION
+# ==============================================================================
+
+_pragma(classify_level=basic, topic={rwuk})
+_method rwuk_csv_reader.new_from_tabbed(file_name, _gather exemplars)
+	
+	## Create a new reader for a tab-separated text file
+
+	new << _clone.init(file_name, exemplars)
+	new.separator << character.tab
+	_return new
+	
+_endmethod
+$
+_pragma(classify_level=basic, topic={rwuk})
+_method rwuk_csv_reader.new_from_csv(file_name, _gather exemplars)
+	
+	## Create a new reader for a comma-separated text file
+
+	new << _clone.init(file_name, exemplars)
+	new.separator << %,
+	_return new
+	
+_endmethod
+$
+_pragma(classify_level=basic, topic={rwuk})
+_method rwuk_csv_reader.new_from_file(file_name, separator, _gather exemplars)
+	
+	## Create a new reader for a text file with columns delimited
+	## by SEPARATOR (usually comma or tab)
+
+	new << _clone.init(file_name, exemplars)
+	new.separator << separator
+	_return new
+	
+_endmethod
+$
+_pragma(classify_level=basic, topic={rwuk})
+_private _method rwuk_csv_reader.init(file_name, exemplars)
+	
+	## Initialise reader
+
+	.file_name      << file_name
+	.exemplars      << exemplars
+	.column_headers << _unset
+	_return _self
+
+_endmethod
+$
+
+
+# ==============================================================================
+# 				  DATA-READING
+# ==============================================================================
+
+_pragma(classify_level=basic, topic={rwuk})
+_iter _method rwuk_csv_reader.values()
+	
+	## Yield succesive scattered values from file, split into columns and
+	## converted to appropriate exemplars
+
+	_for rec _over _self.records()
+	_loop _loopbody(_scatter rec)
+	_endloop
+	
+_endmethod
+$
+
+_pragma(classify_level=basic, topic={rwuk})
+_iter _method rwuk_csv_reader.records()
+	
+	## Yield succesive value ropes from file, split into columns and
+	## converted to appropriate exemplars; also yield line/row number
+
+	.column_headers << _unset
+	_for fields,lino _over _self.lines()
+	_loop
+		_if .row_exemplar.is_kind_of?(externally_keyed_collection_mixin) _andif
+		    .column_headers _is _unset
+		_then
+			# skip page titles
+			# TODO: make optional
+			_if fields.size > 1
+			_then _self.get_column_headers(fields)
+			_endif
+			_continue
+		_endif
+		
+		_local values << rope.new()
+		_try _with cond
+			_for col,field _over fields.fast_keys_and_elements()
+			_loop
+				# convert field values from strings to column types
+				_local ex
+				_if col > .exemplars.size
+				_then ex << :csv!auto
+				_else ex << .exemplars[col]
+				_endif
+				_if ex _is :csv!skip # skip this column
+				_then _continue
+				_endif
+				values.add_last(_self.convert_value(field, ex))
+			_endloop
+		_when error
+			cond.report_on(!output!)
+			write(lino, ": ", write_string_with_separator(fields,","))
+		_endtry
+		
+		_if .row_exemplar _isnt _unset
+		_then
+			_if   .row_exemplar.is_kind_of?(externally_keyed_collection_mixin)
+			_then
+				_local xxx << .row_exemplar.new()
+				_for i,val _over values.fast_keys_and_elements()
+				_loop xxx[.column_headers[i]] << val
+				_endloop
+				values << xxx
+			_elif _not values.is_class_of?(.row_exemplar)
+			_then
+				values << .row_exemplar.new_from(values)
+			_endif
+		_endif
+
+		_loopbody(values, lino)
+		
+	_endloop
+_endmethod
+$
+
+# ==============================================================================
+# 				INTERNAL METHODS
+# ==============================================================================
+
+
+_pragma(classify_level=basic, topic={rwuk})
+_iter _method rwuk_csv_reader.lines()
+	
+	## Yield succesive lines from input file, split into columns
+
+	_protect
+		inf << external_text_input_stream.new(.file_name)
+
+		# read lines, split into columns
+		_local lino << 0
+		_local sep_sep     << write_string(.separator, .separator)
+		_local sep_del_sep << write_string(.separator, character.delete, .separator)
+		_loop
+			lino +<< 1
+			_local lin
+			_if (lin << inf.get_line()) _is _unset _then _leave _endif
+			_if lin.trim_spaces().empty? _then _continue _endif
+			# convert null fields to delete characters
+			_if lin[1] = .separator
+			_then lin << write_string(character.delete, lin)
+			_endif
+			lin << lin.substitute_string(sep_sep, sep_del_sep)
+			lin << lin.substitute_string(sep_sep, sep_del_sep)
+			# hide quoted separators
+			_local in_quotes? << _false
+			_for i,ch _over lin.fast_keys_and_elements()
+			_loop
+				_if   ch = %"
+				_then in_quotes? << _not in_quotes?
+				_elif ch = .separator _andif in_quotes?
+				_then lin[i] << character.newline
+				_endif
+			_endloop
+			# split the line into bits
+			_local bits << rope.new_from(lin.split_by(.separator))
+			# tidy up each bit
+			_for i,bit _over bits.fast_keys_and_elements()
+			_loop
+				str << bit.
+				       substitute_string(character.delete, "").
+				       substitute_string(character.newline, .separator)
+				_if str.size > 1   _andif
+				    str.first = %" _andif
+				    str. last = %" 
+				_then str << str.slice(2, str.size-1)
+				_endif
+				bits[i] << str
+			_endloop
+			_loopbody(bits, lino)
+		_endloop
+	_protection
+		inf.close()
+	_endprotect
+	
+_endmethod
+$
+
+_pragma(classify_level=basic, topic={rwuk})
+_method rwuk_csv_reader.get_column_headers(fields)
+	
+	## Set column headers from FIELDS
+	
+	_local rdr << _self
+	_if .row_exemplar.class_name.index_of_seq(:equality) = 1
+	_then
+		.column_headers << fields
+	_else
+		.column_headers << fields.
+				   map(_proc @rwuk_csv_crunch_column_header(e)
+					       _import rdr
+					       >> rdr.crunch(e).as_symbol()
+				       _endproc)
+	_endif
+	
+_endmethod
+$
+
+_pragma(classify_level=basic, topic={rwuk})
+_method rwuk_csv_reader.convert_value(field_value, exemplar)
+	
+	## Convert the string value in FIELD_VALUE to EXEMPLAR class
+
+	_local val << _unset
+	_if   exemplar _is :csv!auto
+	_then val << _self.auto_convert(field_value)
+	_elif _not field_value.is_kind_of?("")
+	_then val << field_value # already converted
+	_elif exemplar.is_class_of?("")
+	_then val << field_value
+	_elif exemplar _is :lower
+	_then val << field_value.lowercase.as_symbol()
+	_elif exemplar.is_class_of?(:symbol)
+	_then val << field_value.as_symbol()
+	_elif exemplar.is_class_of?(1)
+	_then val << field_value.as_integer(_true)
+	_elif exemplar.is_class_of?(1.0)
+	_then val << exemplar.check_type(field_value.as_number(_true))
+	_elif exemplar.is_class_of?(sw:date)
+	_then val << sw:date.new_from_string(field_value)
+	_elif exemplar.is_class_of?(sw:date_time)
+	_then val << sw:date_time.new_from_string(field_value)
+	_elif exemplar.is_class_of?(sw:unit_value)
+	_then val << sw:unit_value.new_from_string(field_value, exemplar.unit, exemplar.unit)
+	_elif exemplar.is_class_of?(sw:unit_dimensionality)
+	_then val << sw:unit_value.new_from_string(field_value, exemplar.base_unit)
+	_elif exemplar.is_kind_of?(sw:coordinate_mixin)
+	_then val << exemplar(_scatter field_value.split_by(%,).map(_proc(e) >> e.as_number() _endproc))
+	_elif exemplar _is _true _orif exemplar _is _false
+	_then val << (field_value.uppercase = "TRUE") # TODO: 0/1?
+	_elif exemplar _is _maybe
+	_then val << ("MAYBE" _cf field_value.uppercase)
+	_else val << exemplar.check_type(field_value)
+	_endif
+
+	_return val
+	
+_endmethod
+$
+
+_pragma(classify_level=basic, topic={rwuk})
+_method rwuk_csv_reader.auto_convert(field_value)
+	
+	## Convert the string value FIELD_VALUE to integer, float or
+	## string - for loading well-structured data
+	
+	_local val << _unset
+	_if _not field_value.is_kind_of?("")
+	_then _return field_value # already converted
+	_elif (val << field_value.as_integer(_true)) _isnt _unset
+	_then _return val
+	_elif (val << field_value.as_number (_true)) _isnt _unset
+	_then _return val
+	_else _return field_value
+	_endif
+	
+_endmethod
+$
+
+_pragma(classify_level=basic, topic={rwuk, excel}, usage={internal})
+_method rwuk_csv_reader.crunch(name)
+	
+	## Return "crunched" NAME - lower-cased with punctuation &
+	## spaces trimmed & reduced to single underscores
+	##
+	## "*  Underground-Route" => "underground_route"
+	##
+	## Note that "?" characters are removed
+
+	_return name.
+		write_string.
+		lowercase.
+		map(_proc @rwuk_csv_crunch(ch)
+			    _if ch.ascii_alphanumeric?
+			    _then _return ch
+			    _else _return character.space
+			    _endif
+		    _endproc).
+		trim_spaces().
+		substitute_string(" " , "_").
+		substitute_string("__", "_").
+		substitute_string("__", "_").
+		substitute_string("__", "_")
+
+_endmethod
+$
+
+_pragma(classify_level=basic, topic={rwuk, excel}, usage={internal})
+_method rwuk_csv_reader.crunch_compare??(string1, string2)
+	
+	## Compare "crunched" STRING1 & STRING2, returning _FALSE,
+	## _MAYBE _or _TRUE
+	## - see crunch() method
+
+	_if string1 = string2
+	_then _return _maybe 
+	_endif
+	_return (_self.crunch(string1) _cf _self.crunch(string2))
+	
+_endmethod
+$
+
+_pragma(classify_level=basic, topic={rwuk, excel}, usage={internal})
+_method rwuk_csv_reader.crunch_equals?(string1, string2)
+	
+	## Compare "crunched" STRING1 & STRING2 for equality, returning
+	## _TRUE or _FALSE
+
+	_return (_self.crunch_compare??(string1, string2) _is _maybe)
+	
+_endmethod
+$
+
+# ==============================================================================
+# 				UTILITY METHODS
+# ==============================================================================
+
+_pragma(classify_level=basic, topic={rwuk})
+_method externally_keyed_collection_mixin.rwuk_new_from_tabbed(file_name, _gather exemplars)
+	
+	## Create a keyed-collection (property_list, hash_table,
+	## equality_property_list, equality_hash_table,...) from a
+	## tab-separated text file
+
+	_return _self.rwuk_new_from_file(file_name, character.tab, _scatter exemplars)
+
+_endmethod
+$
+_pragma(classify_level=basic, topic={rwuk})
+_method externally_keyed_collection_mixin.rwuk_new_from_csv(file_name, _gather exemplars)
+	
+	## Create a keyed-collection (property_list, hash_table,
+	## equality_property_list, equality_hash_table,...) from a
+	## CSV text file
+
+	_return _self.rwuk_new_from_file(file_name, %, , _scatter exemplars)
+
+_endmethod
+$
+_pragma(classify_level=basic, topic={rwuk})
+_method externally_keyed_collection_mixin.rwuk_new_from_file(file_name, separator, _gather exemplars)
+	
+	## Create a keyed-collection (property_list, hash_table,
+	## equality_property_list, equality_hash_table,...) from a
+	## tab-separated text file
+
+	# TODO: integer keys
+
+	exemplars << rope.new_from(exemplars)
+
+	# add the key exemplar, which will be symbol for identity-keyed
+	# collections and string for equality-keyed collections
+	_if _self.class_name.write_string.matches?("equality_*")
+	_then exemplars.add_first("string")
+	_else exemplars.add_first(:symbol)
+	_endif
+
+	csv << rwuk_csv_reader.new_from_file(file_name, separator, _scatter exemplars)
+	result << _self.new()
+	max_nfields << 0
+	_for rec _over csv.records()
+	_loop
+		_local key << rec.remove_first()
+		result[key] << rec
+		max_nfields << max_nfields.max(rec.size)
+	_endloop
+	# if only one column, narrow to single value
+	_if max_nfields = 1
+	_then
+		_for key,val _over result.fast_keys_and_elements()
+		_loop result[key] << val.an_element() 
+		_endloop
+	_endif
+	_return result 
+	
+_endmethod
+$
+
+_pragma(classify_level=basic, topic={rwuk})
+_method rope_mixin.rwuk_new_from_tabbed(file_name, _gather exemplars)
+	
+	## Create a rope (or sub-class) from a tab-separated text file
+
+	a_reader << rwuk_csv_reader.new_from_tabbed(file_name, _scatter exemplars)
+	_return _self.rwuk!new_from_csv_reader(a_reader)
+
+_endmethod
+$
+
+_pragma(classify_level=basic, topic={rwuk})
+_method rope_mixin.rwuk_new_from_csv(file_name, _gather exemplars)
+	
+	## Create a rope (or sub-class) from a CSV text file
+
+	a_reader << rwuk_csv_reader.new_from_csv(file_name, _scatter exemplars)
+	_return _self.rwuk!new_from_csv_reader(a_reader)
+
+_endmethod
+$
+
+_pragma(classify_level=basic, topic={rwuk})
+_method rope_mixin.rwuk!new_from_csv_reader(a_reader)
+	
+	## Create a rope (or sub-class) from a reader opened on a
+	## CSV/tab-separated text file
+
+	result << _self.new()
+	max_nfields << 0
+	_for rec _over a_reader.records()
+	_loop
+		result.add_last(rec)
+		max_nfields << max_nfields.max(rec.size)
+	_endloop
+	# if only one column, narrow to single value
+	_if max_nfields = 1
+	_then
+		_for key,val _over result.fast_keys_and_elements()
+		_loop result[key] << val.an_element() 
+		_endloop
+	_endif
+	_return result 
+	
+_endmethod
+$
+
+_pragma(classify_level=basic, topic={rwuk})
+_method add_collection_mixin.rwuk_new_from_tabbed(file_name, _gather exemplars)
+	
+	## Create a set, equality_set, sorted_collection etc from a
+	## tab-separated text file
+
+	# get data into a rope; if only one column, then it will have
+	# had the values narrowed; then convert that into our class
+	_return _self.new_from(rope.rwuk_new_from_tabbed(file_name, _scatter exemplars))
+	
+_endmethod
+$
+_pragma(classify_level=basic, topic={rwuk})
+_method add_collection_mixin.rwuk_new_from_csv(file_name, _gather exemplars)
+	
+	## Create a set, equality_set, sorted_collection etc from a
+	## CSV text file
+
+	# get data into a rope; if only one column, then it will have
+	# had the values narrowed; then convert that into our class
+	_return _self.new_from(rope.rwuk_new_from_csv(file_name, _scatter exemplars))
+	
+_endmethod
+$
+
+
+# ==============================================================================
+# 		  DATABASE LOADING - CONFIG RECORDS, SPECS ETC
+# ==============================================================================
+
+_pragma(classify_level=basic, topic={rwuk})
+_method rwuk_csv_reader.rwuk_load_from_directory(a_view, a_directory, _optional checkpoint_tag)
+	
+	## Load database collections in A_VIEW from XLS/CSV/tabbed
+	## files in A_DIRECTORY, where each file has the name of a
+	## collection.
+	##
+	## B4 & AF checkpoints will be created from the supplied
+	## CHECKPOINT_TAG, if supplied
+	##
+	## If a only a selection of files is required, or if the order
+	## of loading is important (such as when loading specs), then a
+	## file_list.txt can be used, otherwise all the files will be
+	## loaded.
+	
+	# use supplied filename list, if present
+	file_list << system.pathname_down(a_directory, "file_list.txt")
+	_if system.file_exists?(file_list)
+	_then
+		file_names << rope.rwuk_new_from_tabbed(file_list, "")
+		_for e _over file_names.elements()
+		_loop
+			_if e.empty? _orif e.first = %#
+			_then file_names.remove(e)
+			_endif
+		_endloop
+	_else
+		# otherwise get a list of files in the directory
+		file_names << rope.new()
+		_local dc
+		_protect
+			dc << directory_channel.new(a_directory)
+			_loop
+				_local path << dc.get_full()
+				_if path _is _unset _then _leave _endif
+				_local (fil, dir) << system.pathname_components(path)
+				_if fil.matches?("*.txt") _orif 
+				    fil.matches?("*.csv") _orif
+				    fil.matches?("*.xls*")
+				_then file_names.add_last(fil)
+				_endif 
+			_endloop
+		_protection
+			dc.close()
+		_endprotect
+	_endif
+
+	# get table & file lists, checking that they both exist
+	table_path_list << rope.new()
+	_for a_file _over file_names.fast_elements() 
+	_loop
+		_local nam << a_file.split_by(".").first.lowercase.
+			      substitute_string(character.space, "_").as_symbol()
+		_local tab << a_view.collections[nam]
+		_if tab _is _unset 
+		_then
+			condition.raise(:error, :string,
+					write_string("Table ",nam," not found"))
+		_endif
+		
+		_local path << system.pathname_down(a_directory, a_file)
+		_if _not system.file_exists?(path)
+		_then
+			condition.raise(:error, :string,
+					write_string(a_file, " not found in ", a_directory))
+		_endif
+		table_path_list.add_last({tab, path})
+	_endloop
+
+
+	# do the actual load
+	_if checkpoint_tag _isnt _unset 
+	_then a_view.checkpoint("B4 "+checkpoint_tag)
+	_endif
+	a_view.switch(:write)
+
+	_for table_path _over table_path_list.fast_elements() 
+	_loop
+		_local (tab, path) << (_scatter table_path)
+		_if   path.matches?("*.txt")
+		_then tab.rwuk_load_from_tabbed(path)
+		_elif path.matches?("*.csv")
+		_then tab.rwuk_load_from_csv   (path)
+		_elif path.matches?("*.xls*")
+		_then tab.rwuk_load_from_excel (path)
+		_endif 
+	_endloop
+	
+	_if checkpoint_tag _isnt _unset 
+	_then a_view.checkpoint("AF "+checkpoint_tag)
+	_endif
+	
+_endmethod
+$
+
+_pragma(classify_level=basic, topic={rwuk}, usage={external})
+_method ds_collection.rwuk_load_from_tabbed(file_name, _optional field_names)
+	
+	## Load a TAB-separated file into this table.
+	##
+	## Field names can be supplied as FIELD_NAMES, otherwise the
+	## column heading in the first row will be used.  Field names
+	## should be the internal field name, although external names
+	## can be used, punctuation errrors are handled.
+
+	_return _self.rwuk_load_from_file(file_name, character.tab, field_names)
+
+_endmethod
+$
+_pragma(classify_level=basic, topic={rwuk}, usage={external})
+_method ds_collection.rwuk_load_from_csv(file_name, _optional field_names)
+	
+	## Load a comma-separated-values file into this table.
+	##
+	## Field names can be supplied as FIELD_NAMES, otherwise the
+	## column heading in the first row will be used.  Field names
+	## should be the internal field name, although external names
+	## can be used, punctuation errrors are handled.
+
+	_return _self.rwuk_load_from_file(file_name, %,, field_names)
+
+_endmethod
+$
+
+_pragma(classify_level=basic, topic={rwuk}, usage={external})
+_method ds_collection.rwuk_load_from_file(file_name, separator, _optional field_names)
+	
+	## Load a file into this table, with fields delimited by
+	## SEPARATOR (usually TAB or comma).
+	##
+	## Field names can be supplied as FIELD_NAMES, otherwise the
+	## column heading in the first row will be used.  Field names
+	## should be the internal field name, although external names
+	## can be used, punctuation errrors are handled.
+
+	# TODO: option to ignore column-headings
+
+	# use supplied field-name list
+	_if field_names _isnt _unset
+	_then fields << _self.record_exemplar.rwuk!csv_get_fields(field_names)
+	_endif 
+
+	csv << rwuk_csv_reader.new_from_file(file_name, separator)
+
+	_local ndone << 0
+	_for values, lino _over csv.records()
+	_loop
+		# if no supplied field-names, use column headers on row 1
+		_if field_names _is _unset _andif lino = 1
+		_then
+			fields << _self.record_exemplar.rwuk!csv_get_fields(values)
+		_else
+			_try _with cond
+				_local det << _self.record_exemplar
+				_local ins << det.rwuk!csv_insert_values(fields, values)
+				_if ins _isnt _unset _then ndone +<< 1 _endif 
+			_when error
+				cond.report_on(!output!)
+				write(lino, ": ", write_string_with_separator(values,", "))
+			_endtry
+		_endif 
+	_endloop
+	_return ndone
+	
+_endmethod
+$
+
+_pragma(classify_level=basic, topic={rwuk}, usage={subclassable})
+_method ds_record.rwuk!csv_get_fields(field_names)
+	
+	## Return a list of physical fields from a list of FIELD_NAMES,
+	## which can be external names - minor punctuation & case
+	## differences will be ignored
+	##
+	## Can be sub-classed for special behaviour
+
+	# procedure to map external names to a simple form by removing
+	# punctutation; note that "?" is removed, as this is often
+	# omitted from the supplied names
+	_local name_tidy_proc << _proc @rwuk_csv_name_tidy(ch)
+					 _if ch.ascii_alphanumeric?
+					 _then _return ch
+					 _else _return character.space
+					 _endif
+				 _endproc
+	
+	fields << rope.new()
+	_for nam _over field_names.fast_elements() 
+	_loop
+		# ignore columns with header-labels like "(COUNT)" or "#NOTES"
+		_if nam.matches?("(*)") _orif
+		    nam.matches?("#*")
+		_then
+			fields.add_last(:csv!skip)
+			_continue 
+		_endif
+		
+		_local tidied_name <<
+			nam.write_string.lowercase.
+			map(name_tidy_proc).
+			trim_spaces().substitute_string(" " , "_").
+			substitute_string("__", "_").substitute_string("__", "_")
+		_local matched_field << _unset 
+		_for fld _over _self.rwuk!csv_fields()
+		_loop
+			_local tidied_e_name <<
+				fld.external_name.lowercase.
+				map(name_tidy_proc).
+				trim_spaces().substitute_string(" " , "_").
+				substitute_string("__", "_").substitute_string("__", "_")
+
+			_if fld.name = nam.write_string.lowercase                    _orif 
+			    fld.external_name = nam                                  _orif 
+			    fld.external_name.lowercase = nam.write_string.lowercase _orif 
+			    fld.name = tidied_name                                   _orif
+			    tidied_e_name = tidied_name
+			_then
+				matched_field << fld
+				_leave # TODO: continue & test for ambiguities
+			_endif
+		_endloop
+		_if matched_field _isnt _unset 
+		_then
+			fields.add_last(matched_field)
+		_else condition.raise(:error, :string,
+				      write_string("No field for ", nam, " from: ",
+						   write_string_with_separator(field_names, ", ")))
+		_endif
+	_endloop
+	
+	_return fields
+
+_endmethod
+$
+
+_pragma(classify_level=basic, topic={rwuk}, usage={subclassable})
+_iter _method ds_record.rwuk!csv_fields()
+      
+	## Yield fields to be matched against the CSV columns
+	##
+	## Can be sub-classed for special behaviour
+
+	_for fld _over _self.physical_fields()
+	_loop
+		_if fld.name _is :ds!version _orif
+		    fld.name _is :rwo_id     _orif
+		    fld.name.index_of_seq(:dd!) = 1
+		_then _continue
+		_endif 
+		_loopbody(fld)
+	_endloop
+	_for fld _over _self.join_fields()
+	_loop
+		_if fld.name.index_of_seq(:dd!) = 1
+		_then _continue
+		_endif
+		_loopbody(fld)
+	_endloop
+	_if _self.responds_to?(:geometry_fields|()|)
+	_then
+		_for fld _over _self.geometry_fields()
+		_loop
+			_if fld.name _is :meatball
+			_then _continue 
+			_endif
+			_local (mapped_field, self_mapped?) << fld.mapped_to_geom_field()
+			_if mapped_field _is _unset _orif
+			    self_mapped?
+			_then
+				_loopbody(fld)
+			_endif
+		_endloop
+	_endif
+      
+_endmethod
+$
+
+_pragma(classify_level=basic, topic={rwuk}, usage={subclassable})
+_method ds_record.rwuk!csv_insert_values(fields, values)
+
+	## Insert a record for this record_exemplar with FIELDS set to
+	## VALUES (actual values, or strings to be converted to
+	## field-type values), returning the new record
+	##
+	## This is defined on the record_exemplar so that it can be
+	## subclassed for special behaviour
+	
+	# Note that parent joins are indicated by their aspect field
+	# value; parent joins and simple point geometry fields are
+	# handled by the record_transaction mechanism
+
+	_local props << property_list.new()
+	_for i,field _over fields.fast_keys_and_elements()
+	_loop
+		_if field _is :csv!skip
+		_then _continue 
+		_endif
+		
+		# trailing field values missing
+		_if i > values.size
+		_then _continue 
+		_endif
+
+		# get value for this field 
+		_local value << values[i]
+
+		_if   field.is_join?
+		_then
+			# Join field
+			_if _self.responds_to?(:rwuk_csv_process_join|()|)
+			_then
+				# special cases for non-standard joins
+				value << _self.rwuk_csv_process_join(field, value)
+			_else
+				# TODO: check join_type
+				_local aspect << field.join_aspect
+				_local target << field.result_table
+				_if aspect _isnt _unset _andif
+				    target _isnt _unset _andif
+				    target.has_field?(aspect)
+				_then
+					_local pred << predicate.eq(aspect, value, :ci)
+					value << target.select(pred).an_element()
+				_else
+					condition.raise(:error, :string,
+							write_string("Unable to process join field: ",
+								     field.external_name))
+					value << _unset 
+				_endif
+			_endif
+		_elif field.is_geometry?
+		_then
+			# Geometry field
+			# TODO: needs more development
+			_if field.geom_category _is :point 
+			_then
+				value << coordinate(_scatter field.
+						    split_by(%,).
+						    map(_proc @rwuk_csv_split_coordinate(e)
+								>> e.as_number()
+							_endproc))
+			_endif
+		_elif field.is_physical?
+		_then
+			# Physical field...
+			_if value = "" _orif
+			    value _is _unset 
+			_then
+				# blank data - apply default/unset value
+				_if   field.default_value _isnt _unset 
+				_then value << field.default_value
+				_elif field.unset_value _isnt _unset 
+				_then value << field.unset_value
+				_else value << field.value_from_string(value.default(""))
+				_endif 
+			_endif
+			
+			# convert value to appropriate type for field
+			_if   (enum << field.type.enumerator) _isnt _unset
+			_then
+				# enumerated field - adjust value to matching entry (tolerating
+				# case & space differences), and report invalid values
+				_if enum.sorted_values.an_element().is_class_of?("")
+				_then
+					_local enum_value << _unset
+					_local value_string << value.write_string.trim_spaces()
+					_for eval _over enum.sorted_values.fast_elements() 
+					_loop
+						# fix case of supplied value (UNKNOWN=>Unknown etc)
+						_if eval.trim_spaces()           = value_string _orif 
+						    eval.trim_spaces().lowercase = value_string.lowercase
+						_then enum_value << eval; _leave 
+						_endif
+						# supplied values could be numeric for string enum
+						_if   value.is_class_of?(1) _andif 
+						      eval.as_integer() = value
+						_then enum_value << eval; _leave 
+						_elif value.is_class_of?(1.0) _andif 
+						      eval.as_number() = value
+						_then enum_value << eval; _leave 
+						_endif
+					_endloop
+					_if   enum_value _isnt _unset 
+					_then
+						value << enum_value
+					_else
+						condition.raise(
+							:error, :string,
+							write_string("Value ",value,
+								     " not in enumerator for ",
+								     field.external_name))
+					_endif
+				_endif
+			_elif value.is_kind_of?("")
+			_then 
+				# convert value from string to correct field type
+				value << field.value_from_string(value)
+			_else
+				# value is non-string, coerce to correct type
+				_local field_class << field.type.element_class
+				_if field_class.is_class_of?("") _orif 
+				    field_class.is_class_of?(%A)
+				_then value << value.write_string
+				_elif field.stored_unit _isnt _unset _andif
+				      value.is_kind_of?(unit_value)
+				_then # OK
+				_else value << field_class.check_type(value)
+				_endif
+			_endif
+		_endif
+		
+		props[field.name] << value
+	_endloop
+	
+	# some Template tables (such as street_designation_spec) have
+	# no generator on the :id field, but they don't inherit from
+	# mit_common_spec_data_record (which would have generated the
+	# ID values), so we have to do a special check here to generate
+	# the ID, unless it's supplied in the source data
+	_if (fld << _self.field(:id)) _isnt _unset _andif 
+	    fld.is_key?                            _andif 
+	    fld.generator _is _unset               _andif
+	    _not props.includes_key?(:id)
+	_then props[:id] << _self.make_unique_id() 
+	_endif
+
+	# supply defaults for missing fields
+	_for fn _over _self.physical_field_names()
+	_loop
+		_local a_field << _self.field(fn)
+		_if _not props.includes_key?(fn) _andif  
+		    a_field.mandatory?               _andif 
+		    a_field.default_value _isnt _unset 
+		_then props[fn] << a_field.default_value
+		_endif 
+	_endloop 
+
+	# give the record exemplar a chance to refine the values
+	_if _self.responds_to?(:rwuk_csv_pre_insert|()|)
+	_then _self.rwuk_csv_pre_insert(props)
+	_endif
+
+	_local trans << record_transaction.new_insert(_self.source_collection,
+						      props)
+	new_rec << trans.run()
+	_if new_rec _is _unset 
+	_then
+		condition.raise(:warning, :string,
+				write_string("Insert failed for ", _self.source_collection.name,
+					     write_string_with_separator(values, ", ")))
+	_endif
+	
+	# (post-insert actions - joins, geometry etc)
+
+	_return new_rec 
+	
+_endmethod
+$
