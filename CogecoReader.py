@@ -1,5 +1,9 @@
 import mmap
 
+## CogecoReader
+## Parses the file whose name is passed in at instantiation and packages up the elements inside there.
+
+
 QC_FO_FOSC_IDENTIFIER='38;FO_FOSC'
 QC_FO_FOSC_NO_OF_FIELDS=63
 

@@ -1,5 +1,6 @@
 import CogecoReader
 
+## Provides methods for reading items from the ngf filename defined when the class is instantiated
 
 
 class CogecoConverter():
