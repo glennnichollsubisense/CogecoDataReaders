@@ -1,0 +1,9 @@
+
+_global make_province_boundary<<
+_proc (pName, pData, _optional pTableName)
+
+
+	_local ltransform
+	_local lsec << sector.new()
+	
+_endproc

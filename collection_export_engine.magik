@@ -1,0 +1,548 @@
+_pragma(classify_level=advanced, topic={dmt, query, report}, usage={internal})
+_method collection_export_engine.create_excel_mapping_file_for_collections( collections, _gather keys_and_args )
+	##
+	##  Parameters 
+        ##  ----------------------------------------
+        ##  :run_in_background?
+        ##                     When set to true, the export will run in
+        ##                     the background.
+        ## 
+        ##                     Defaults to false
+        ## 
+        ## 
+        ##  :filename          When done exporting, saves the workbook
+        ##                     to the filename indicated. If no filename
+        ##                     is given, the created excel workbook
+        ##                     won't be saved automatically.
+        ## 
+        ##                     If the file indicated already exists, the
+        ##                     export will *not* be saved and the 'quiet?'
+        ##                     flag will automatically be set to false.
+        ## 
+        ##  :quiet?            If quiet? is set to true, Excel won't be
+        ##                     made visible after the export has
+        ##                     finished.
+        ## 
+        ##                     The default value of quiet? depends on
+        ##                     the parameter filename being handed over
+        ##                     or not.
+        ## 
+        ##                     Filename given   Default value for quiet?
+        ##                     -----------------------------------------
+        ##                     False            False
+        ##                     True             True
+        ## 
+        ##                     Note that when exporting in quiet mode
+        ##                     without handing over a filename performs
+        ##                     the export but the data can not be
+        ##                     reached.
+	##
+
+	_for a_col _over collections.fast_elements()
+	_loop
+		_self.add_collection(a_col)
+	_endloop
+
+	_self.export_to(:int!create_excel_mapping_file|()|, _scatter keys_and_args)
+
+_endmethod
+$
+
+_pragma(classify_level=advanced, topic={dmt, query, report}, usage={internal})
+_method collection_export_engine.create_excel_mapping_file_for_dataset( a_dataset, _gather keys_and_args )
+	##
+	##   Parameters 
+        ##  ----------------------------------------
+        ##  :run_in_background?
+        ##                     When set to true, the export will run in
+        ##                     the background.
+        ## 
+        ##                     Defaults to false
+        ## 
+        ## 
+        ##  :filename          When done exporting, saves the workbook
+        ##                     to the filename indicated. If no filename
+        ##                     is given, the created excel workbook
+        ##                     won't be saved automatically.
+        ## 
+        ##                     If the file indicated already exists, the
+        ##                     export will *not* be saved and the 'quiet?'
+        ##                     flag will automatically be set to false.
+        ## 
+        ##  :quiet?            If quiet? is set to true, Excel won't be
+        ##                     made visible after the export has
+        ##                     finished.
+        ## 
+        ##                     The default value of quiet? depends on
+        ##                     the parameter filename being handed over
+        ##                     or not.
+        ## 
+        ##                     Filename given   Default value for quiet?
+        ##                     -----------------------------------------
+        ##                     False            False
+        ##                     True             True
+        ## 
+        ##                     Note that when exporting in quiet mode
+        ##                     without handing over a filename performs
+        ##                     the export but the data can not be
+        ##                     reached.
+	##
+
+	_for a_col _over a_dataset.user_tables()
+	_loop
+		_self.add_collection(a_col)
+	_endloop
+
+	_self.export_to(:int!create_excel_mapping_file|()|, _scatter keys_and_args)
+	
+_endmethod
+$
+
+
+_pragma(classify_level=restricted, topic={query, report}, usage={internal})
+_method collection_export_engine.int!create_excel_mapping_file(properties)
+	##
+	## The method actually performing the export to Excel. Not to
+	## be used directly. 
+	##
+	_local used_sheet_names << equality_set.new()
+	_local start_row << 5 
+	_local start_col << 1
+	
+	_dynamic !print_float_precision! << 12
+
+	_protect
+		_self.report_progress(:information, _self.message(:excel_starting))
+
+		# Get hold of the excel application
+		_if _not (excel_appl << ole_client.create_object("Excel.application")).is_class_of?( ole_controller )
+		_then
+			# Excel not found
+			_return 
+		_endif 
+
+		_try _with cond
+		     # Turn of screenupdating
+		     excel_appl.screenupdating << _false
+		_when ole_server_error
+		      # Excel was in a mode that it couldn't accept input
+		      _self.report_progress(:error, _self.message(:excel_could_not_get_access) )
+		      _return 
+		_endtry
+
+		(workbook, using_template?) << _self.int!excel_workbook( excel_appl )
+		use_formatting? << _not using_template?
+
+		# Reset the sheet number (in a heterogeneous collection, the
+		# various results will end up in different sheets).
+		sheet_nr << 0
+
+		# Loop over all tables and export every table on a separate
+		# sheet. 
+		_for collection, external_name, more_collections?, 
+		     fields, field_external_names, field_types, field_lengths, field_widths _over _self.collections()
+		_loop
+			nr_of_fields << fields.size
+
+			# Check whether there are columns for this collection
+			_if nr_of_fields _is 0
+			_then
+				# Can't create ranges with 0 columns, so skip this collection 
+				_self.report_progress(:warning, _self.message(:excel_no_fields_for_collection, _unset,
+									      external_name))
+				_continue 
+			_endif
+			
+			# Set a new sheet_nr for the sheet to be created
+			sheet_nr+<< 1
+
+			# Get a reference to the sheet_nr's sheet.
+			sheet << _self.int!excel_sheet( excel_appl, sheet_nr, external_name, used_sheet_names )
+
+			# Export the headers
+			_self.int!excel_create_mapping_file_headers( excel_appl, sheet,collection,
+								     {"Category","Field Internal Name",
+								      "Field External Name","Field Type",
+								      "Enumerator Values",
+								      "",
+								      "",
+								      ""},
+								     {15,15,15,20,20,20,15,15}, 
+								     start_row, start_col, use_formatting? )
+			
+			# Export the records
+			_self.int!excel_create_mapping_file_field_rows( excel_appl, sheet, collection, start_row, start_col, use_formatting? )
+			
+			# Release the sheet that results of the current table are
+			# stored in.
+			sheet.Release_Object()
+		_endloop
+
+		# In case we've exported multiple tables, multiple sheets will
+		# have been created. Make sure the first sheet is the active
+		# one. 
+		_if sheet_nr > 1
+		_then
+			sheet << excel_appl.Sheets( 1 )
+			sheet.Activate()
+			Sheet.Release_Object()
+		_endif
+
+		# Check whether the exported workbook needs to be saved.
+		_if (filename << properties[:filename]) _isnt _unset 
+		_then
+			_if _not system.file_exists?(filename)
+			_then
+				workbook.SaveAs(filename)
+				properties[:quiet?] << properties[:quiet?].default(_true)
+			_else
+				# Force user to interact
+				_self.report_progress(:warning, _self.message(:file_already_exists, _unset, filename))
+
+				properties[:quiet?] << _false 
+			_endif
+		_endif
+		
+		
+	_protection
+		_if workbook _isnt _unset 
+		_then
+			# Release the workbook
+			workbook.release_object()
+		_endif
+		
+		_if excel_appl _isnt _unset 
+		_then
+			_try _with cond 
+				# Turn screenupdating on, forcing a redraw
+				excel_appl.ScreenUpdating << _true
+
+				_if properties[:quiet?] _isnt _true 
+				_then
+					# Make Excel visible on the desktop
+					excel_appl.visible << _True
+				_endif
+			_when ole_server_error
+			      # Do not report again, since this has been reported before 
+			_endtry
+
+			excel_appl.release_object()
+		_endif
+	_endprotect
+_endmethod
+$
+
+_pragma(classify_level=restricted)
+_private _method collection_export_engine.int!excel_create_mapping_file_headers( excel_appl, sheet,
+										 collection, headers, widths,
+										 start_row, start_col, use_formatting? )
+	##
+	## Creates headers for the SHEET in the EXCEL_APPL. The headers
+	## are formed by the given HEADERS and the corresponding WIDTHS
+	## determine the widths of the columns the headers appear in.
+	## The headers will be placed starting in START_ROW and
+	## START_COL (which are offsets).
+	## If USE_FORMATTING? is true, the headers will be formatted
+	## (centre alignment, wrapping true).
+	##
+
+	str << write_string("Source Dataset",tab_char,"Table Internal Name",tab_char,
+			    "Table External Name (also shown on the tab name)",tab_char,"",tab_char,
+			    "",tab_char,"",tab_char,
+			    "",tab_char,
+			    "",tab_char,
+			    "",newline_char,
+			    collection.source_view.name,tab_char,collection.name, tab_char, collection.external_name)
+
+	# Send the stream's content to the clipboard
+	_self.wm_clipboard.clipboard_text << str
+	
+	# Populate the appropriate part of the Excel sheet with the
+	# clipboard's content.
+	start_char << (64+start_col).as_character()
+	end_char << (64+start_col+8).as_character()
+	range_string << write_string(start_char,1,":",end_char,1)
+	
+	range << sheet.range(range_string)
+	excel_appl.goto(range)
+	sheet.paste()
+	range.wraptext << _true
+	ft      << range.font()
+	ft.size   << 10
+	ft.bold << _true
+	ft.italic << _true 
+	range.Release_Object()
+	
+	
+	_local nr_of_headers << headers.size
+
+	# Set column headers
+	range_string << _self.int!excel_range_string_for( start_row, start_col, nr_of_headers) 
+
+	range << Sheet.Range( range_string )
+	(range.value, range.columnwidth) << (headers, widths)
+
+	_if use_formatting?
+	_then
+		# Only perform the centre alignment and text wrapping when no
+		# template is in use. 
+		range.horizontalalignment << 3 # Centre
+		range.wraptext << _true
+
+		# Set font for the headers (fields). Only performed when there
+		# is no template in use. 
+		ft      << range.font()
+		ft.size   << 10
+		ft.bold   << _true
+		ft.italic << _true 
+		ft.release_object()
+	_endif
+
+	# Release the range
+	range.Release_Object()
+_endmethod
+$
+
+
+_pragma(classify_level=restricted)
+_method collection_export_engine.int!excel_create_mapping_file_field_rows( excel_appl, sheet, collection, start_row, start_col, use_formatting? )
+	##
+	## Exports the records of the current collection to the SHEET
+	## in EXCEL_APPL. The START_ROW and START_COL indicate the
+	## offset to use when exporting.
+	## When USE_FORMATTING? is true, freeze_panes will be created
+	## to help scrolling in the resulting excel sheet.
+	##
+	## The limit of number of rows is 65536. The maximum number of
+	## records that can be exported is 65536 - start_row - 1 since
+	## we need to take the start_row into account, as well as an
+	## extra placeholder row for setting the next selection.
+	##
+	_local _constant max_rows_in_excel << 65536
+	_local _constant max_nr_to_export << max_rows_in_excel - start_row - 1
+	_local str << internal_text_output_stream.new()
+	_local vals <<  internal_text_output_stream.new()
+	_local row_nr << 2
+	_local start_char << (64+start_col).as_character()
+	_local nr_per_batch << 100
+	_local wm_clipboard << _self.wm_clipboard
+	_local nr_exported  << 0
+	_local ignore_fds << {:rwo_id,:ds!version,:meatball}
+
+	nr_of_rows << 0
+	_for fd _over collection.physical_fields.fast_elements()
+	_loop
+		_if ignore_fds.includes?(fd.name) _orif fd.name.index_of_seq(:text_id) _isnt _unset  _then _continue _endif
+
+		
+		str.write("Physical",tab_char,
+			  fd.name, tab_char,
+			  fd.external_name,tab_char,
+			  fd.type.name.default(fd.type.phys_type).write_string, tab_char,
+			  "")
+		
+		# Send the stream's content to the clipboard
+		wm_clipboard.clipboard_text << str.string
+		str.reset()
+
+		# Populate the appropriate part of the Excel sheet with the
+		# clipboard's content.
+		range_string << write_string(start_char,start_row+row_nr-1+nr_of_rows)
+		range << sheet.range(range_string)		
+		excel_appl.goto(range)
+		sheet.paste()
+		range.wraptext << _true
+		range.horizontalalignment << 1
+		range.verticalalignment << 1
+		range.Release_Object()
+
+		vals.reset()
+		
+		_if fd.type _isnt _unset _andif (enum << fd.type.enumerator) _isnt _unset
+		_then
+			vals.write(%")
+			_for a_val _over enum.sorted_values.fast_elements()
+			_loop
+				vals.write(a_val.write_string,newline_char)
+			_endloop
+
+			vals.write(%")
+		_endif
+		# Send the stream's content to the clipboard
+		wm_clipboard.clipboard_text << vals.string
+		
+		# Populate the appropriate part of the Excel sheet with the
+		# clipboard's content.
+		range_string << write_string("E",start_row+row_nr-1+nr_of_rows)
+		range << sheet.range(range_string)
+		excel_appl.goto(range)
+		sheet.paste()
+		range.wraptext << _true
+		range.horizontalalignment << 1
+		range.verticalalignment << 1
+		ft      << range.font()
+		ft.italic << _true 
+		range.Release_Object()
+	
+
+			# After each record, write a newline character. 
+			#	str.write(newline_char)
+
+			nr_of_rows +<< 1
+			nr_exported+<< 1
+
+			_if nr_exported _is max_nr_to_export
+			_then
+				# We've reached the limit for exporting to Excel ('only' 65536
+				# rows are available). 
+				_leave 
+			_endif
+		_endloop
+
+
+	_for fd _over collection.join_fields.fast_elements()
+	_loop
+
+		_if fd.name.index_of_seq(:dd!) _isnt _unset _then _continue _endif 
+		
+		str.write("Join",tab_char,
+			  fd.name, tab_char,
+			  "",tab_char,
+			  fd.join_type.default("N/A").write_string, tab_char,
+			  "",tab_char,
+			  "",tab_char,
+			  "",tab_char
+						   )
+
+		 # Send the stream's content to the clipboard
+		 wm_clipboard.clipboard_text << str.string
+		 str.reset()
+		 
+		 # Populate the appropriate part of the Excel sheet with the
+		 # clipboard's content.
+		 range_string << write_string(start_char,start_row+row_nr-1+nr_of_rows)
+		 range << sheet.range(range_string)		
+		 excel_appl.goto(range)
+		 sheet.paste()
+		 range.wraptext << _true
+		 range.horizontalalignment << 1
+		 range.verticalalignment << 1
+		 range.Release_Object()
+		 
+		 
+		 # After each record, write a newline character. 
+		 #	str.write(newline_char)
+
+		 nr_of_rows +<< 1
+		 nr_exported+<< 1
+		 
+		 _if nr_exported _is max_nr_to_export
+		 _then
+			 # We've reached the limit for exporting to Excel ('only' 65536
+			 # rows are available). 
+			 _leave 
+		 _endif
+	_endloop
+
+	_if collection.responds_to?(:geometry_fields)
+	_then 
+		
+		# first get all mapped geoms
+		mfds << rope.new()
+		_for fd _over collection.geometry_fields.fast_elements()
+		_loop
+			_if fd.mapped?
+			_then
+				mfds.add_all_last(fd.mapped_geometry_fields)
+			_endif 
+		_endloop
+		
+		_for fd _over collection.geometry_fields.fast_elements()
+		_loop
+			_if ignore_fds.includes?(fd.name) _orif mfds.includes?(fd) _then _continue _endif
+			
+			str.write("Geometry",tab_char,
+				  fd.name, tab_char,
+				  "",tab_char,
+				  fd.geom_type.default("N/A").write_string, tab_char,
+				  "",tab_char,
+				  "",tab_char,
+				  "",tab_char
+				)
+			
+			# Send the stream's content to the clipboard
+			wm_clipboard.clipboard_text << str.string
+			str.reset()
+			
+			# Populate the appropriate part of the Excel sheet with the
+			# clipboard's content.
+			range_string << write_string(start_char,start_row+row_nr-1+nr_of_rows)
+			range << sheet.range(range_string)		
+			excel_appl.goto(range)
+			sheet.paste()
+			range.Release_Object()
+			
+			
+			# After each record, write a newline character. 
+			#	str.write(newline_char)
+			
+			nr_of_rows +<< 1
+			nr_exported+<< 1
+			
+			_if nr_exported _is max_nr_to_export
+			_then
+				# We've reached the limit for exporting to Excel ('only' 65536
+				# rows are available). 
+				_leave 
+			_endif
+		_endloop
+	_endif
+	
+	# Go to the next 'block' in the sheet
+	row_nr +<< nr_of_rows
+		
+	_if nr_exported _is max_nr_to_export
+	_then
+		# We've reached the limit for exporting to Excel ('only' 65536
+		# rows are available). Tell the user and stop exporting this
+		# table. 
+		_self.report_progress( :error, _self.message( :excel_maximum_number_of_rows,
+													  _unset, max_rows_in_excel ) )
+		_leave
+	_endif
+	
+	
+	# End of Table
+	
+	_if use_formatting?
+	_then
+		# Freeze the panes at the right position (so the header won't
+		# scroll anymore). This is dependent on the start_row and
+		# start_col as set up by the user.
+		range << sheet.range(write_string(start_char, start_row+1))
+		excel_appl.goto(range)
+		range.Release_Object()
+
+		# Now set the freeze pane...
+		window << excel_appl.activewindow()
+		window.freezepanes << _true
+		window.release_object()
+
+		# Populate the appropriate part of the Excel sheet with the
+		 # clipboard's content.
+		 range_string << write_string(start_char,start_row,":","I",start_row+nr_of_rows)
+		 range << sheet.range(range_string)		
+		 excel_appl.goto(range)
+		 range.wraptext << _true
+		 range.horizontalalignment << 2
+		 range.verticalalignment << 1
+		 range.Release_Object()
+	_endif
+
+	# Finally, leave the sheet with the selection at a new row and
+	# at the start column.
+	range << sheet.range(write_string(start_char, row_nr+start_row-1))
+	excel_appl.goto(range)
+	range.Release_Object()
+_endmethod
+$
