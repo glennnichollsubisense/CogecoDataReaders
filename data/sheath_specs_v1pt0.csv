@@ -1,289 +1,288 @@
-Manufacturer^Model^Cogeco Number^Type^Fibre Quantity^Construction^Armor^Diameter (mm)^Weight kg/km^Sag Allowance^Helix Factor
-ALCATEL^^^^4^MICROUNITUBE^SP^^^^
-ALCATEL^^^^4^MICROUNITUBE^SP^^^^
-ALCATEL^^^^6^LOOSETUBE^PSP^^^^
-ALCATEL^^^^6^LOOSETUBE^TJP^^^^
-ALCATEL^^^^6^MICROUNITUBE^SP^^^^
-ALCATEL^^^^6^LOOSETUBE^PSP^^^^
-ALCATEL^^^^8^Loose Tube^PSP^^^^
-ALCATEL^^^^8^LOOSETUBE^PSP^^^^
-ALCATEL^^^^8^MICROUNITUBE^SP^^^^
-ALCATEL^^^^8^LOOSETUBE^PSP^^^^
-ALCATEL^^^^12^Loose Tube^PSP^^^^
-ALCATEL^^^^12^Micro Unitube^SP^^^^
-ALCATEL^^^^12^LOOSETUBE^TJP^^^^
-ALCATEL^^^Gel-Filled^12^UNITUBE^PDP^^^^
-ALCATEL^^^^12^LOOSETUBE^PSP^^^^
-ALCATEL^^^^12^LOOSETUBE^PSP^^^^
-ALCATEL^^^^12^LOOSETUBE^PSP^^^^
-ALCATEL^^^Gel-Filled^12^UNITUBE^PDP^^^^
-ALCATEL^^^^16^LOOSETUBE^PSP^^^^
-ALCATEL^^^^16^LOOSETUBE^PSP^^^^
-ALCATEL^^^^16^LOOSETUBE^TJP^^^^
-ALCATEL^^^^16^LOOSETUBE^PSP^^^^
-ALCATEL^^^^16^LOOSETUBE^PSP^^^^
-ALCATEL^^^^16^LOOSETUBE^PSP^^^^
-ALCATEL^^^^16^LOOSETUBE^PSP^^^^
-ALCATEL^^^^18^LOOSETUBE^TJP^^^^
-ALCATEL^^^^18^LOOSETUBE^PSP^^^^
-ALCATEL^^^^20^LOOSETUBE^PSP^^^^
-ALCATEL^^^^20^LOOSETUBE^PSP^^^^
-ALCATEL^^^^24^LOOSETUBE^PSP^^^^
-ALCATEL^^^^24^LOOSETUBE^TJP^^^^
-ALCATEL^^^^24^LOOSETUBE^PDP^^^^
-ALCATEL^^^^24^LOOSETUBE^SP^^^^
-ALCATEL^^^^24^LOOSETUBE^TJP^^^^
-ALCATEL^^^Gel-Filled^24^UNITUBE^PDP^^^^
-ALCATEL^^^^24^LOOSETUBE^PSP^^^^
-ALCATEL^^^^28^LOOSETUBE^PSP^^^^
-ALCATEL^^^^32^LOOSETUBE^PSP^^^^
-ALCATEL^^^^32^LOOSETUBE^PSP^^^^
-ALCATEL^^^^32^LOOSETUBE^PSP^^^^
-ALCATEL^^^^32^LOOSETUBE^PSP^^^^
-ALCATEL^^^^36^LOOSETUBE^PSP^^^^
-ALCATEL^^^^36^LOOSETUBE^TJP^^^^
-ALCATEL^^^^36^LOOSETUBE^SP^^^^
-ALCATEL^^^Gel-Filled^36^UNITUBE^PDP^^^^
-ALCATEL^^^^36^UNITUBE^PDP^^^^
-ALCATEL^^^^36^LOOSETUBE^PSP^^^^
-ALCATEL^^^^48^LOOSETUBE^TJP^^^^
-ALCATEL^^^^48^LOOSETUBE^PSP^^^^
-ALCATEL^^^Gel-Free^48^UNITUBE^SP^^^^
-ALCATEL^^^^48^LOOSETUBE^PSP^^^^
-ALCATEL^^^^52^LOOSETUBE^PSP^^^^
-ALCATEL^^^^56^Loose Tube^PSP^^^^
-ALCATEL^^^^60^LOOSETUBE^PSP^^^^
-ALCATEL^^^^64^LOOSETUBE^PSP^^^^
-ALCATEL^^^^64^LOOSETUBE^PSP^^^^
-ALCATEL^^^^72^Loose Tube^PSP^^^^
-ALCATEL^^^^72^LOOSETUBE^TJP^^^^
-ALCATEL^^^^72^LOOSETUBE^SJP^^^^
-ALCATEL^^^^80^LOOSETUBE^PSP^^^^
-ALCATEL^^^^84^LOOSETUBE^TJP^^^^
-ALCATEL^^^^84^LOOSETUBE^PSP^^^^
-ALCATEL^^^^88^LOOSETUBE^PSP^^^^
-ALCATEL^^^^96^LOOSETUBE^PSP^^^^
-ALCATEL^^^^96^LOOSETUBE^TJP^^^^
-ALCATEL^^^^96^LOOSETUBE^PSP^^^^
-ALCATEL^^^^108^LOOSETUBE^PSP^^^^
-ALCATEL^^^^112^LOOSETUBE^PSP^^^^
-ALCATEL^^^^120^LOOSETUBE^PSP^^^^
-ALCATEL^^^^144^LOOSETUBE^PSP^^^^
-ALCATEL^^^^156^Loose Tube^SP^^^^
-ALCATEL^^^^168^LOOSETUBE^TJP^^^^
-ALCATEL^^^^168^LOOSETUBE^SP^^^^
-ALCATEL^^^^192^LOOSETUBE^PDP^^^^
-ALCATEL^^^^192^LOOSETUBE^PSP^^^^
-ALCATEL^^^^228^LOOSETUBE^PDP^^^^
-ALCATEL^^^^288^LOOSETUBE^SP^^^^
-CORNING^ALTOS^^Gel-Free^12^Loose Tube^SJP^10.50^73^^
-CORNING^ALTOS^^Gel-Free^12^Loose Tube^PDP^12.5^107^^
-CORNING^ALTOS^10001485^Gel-Filled^12^Loose Tube^PDP^12.5^107^^
-CORNING^ALTOS^^Gel-Free^12^Loose Tube^PS^12.10^129^^
-CORNING^ALTOS^10002766^Gel-Free^24^Loose Tube^PDP^17.7^209^^
-CORNING^ALTOS^^Gel-Free^36^Loose Tube^SJP^10.50^73^^
-CORNING^ALTOS^^Gel-Free^48^Loose Tube^PDP^12.5^107^^
-CORNING^ALTOS^10001486^Gel-Filled^60^Loose Tube^PDP^12.5^107^^
-CORNING^ALTOS^^Gel-Free^60^Loose Tube^PS^12.10^129^^
-CORNING^ALTOS^^Gel-Free^72^Loose Tube^SJP^10.50^73^^
-CORNING^ALTOS^^Gel-Free^84^Loose Tube^PDP^12.5^107^^
-CORNING^ALTOS^10001487^Gel-Filled^96^Loose Tube^PDP^12.5^107^^
-CORNING^ALTOS^^Gel-Free^96^Loose Tube^PS^12.10^129^^
-CORNING^ALTOS^^Gel-Free^108^Loose Tube^SJP^10.50^73^^
-CORNING^ALTOS^^Gel-Free^120^Loose Tube^PDP^12.5^107^^
-CORNING^ALTOS^10001488^Gel-Filled^132^Loose Tube^PDP^12.5^107^^
-CORNING^ALTOS^^Gel-Free^132^Loose Tube^PS^12.10^129^^
-CORNING^ALTOS^^Gel-Free^144^Loose Tube^SJP^10.50^73^^
-CORNING^ALTOS^^Gel-Free^156^Loose Tube^PDP^12.5^107^^
-CORNING^ALTOS^10001489^Gel-Filled^168^Loose Tube^PDP^12.5^107^^
-CORNING^ALTOS^^Gel-Free^168^Loose Tube^PS^12.10^129^^
-CORNING^ALTOS^^Gel-Free^180^Loose Tube^SJP^10.50^73^^
-CORNING^ALTOS^^Gel-Free^192^Loose Tube^PDP^12.5^107^^
-CORNING^ALTOS^10001491^Gel-Filled^204^Loose Tube^PDP^12.5^107^^
-CORNING^ALTOS^^Gel-Free^204^Loose Tube^PS^12.10^129^^
-CORNING^ALTOS^^Gel-Free^216^Loose Tube^SJP^12.20^98^^
-CORNING^ALTOS^^Gel-Free^228^Loose Tube^PDP^14.2^137^^
-CORNING^ALTOS^10002100^Gel-Filled^240^Loose Tube^PDP^14.2^137^^
-CORNING^ALTOS^^Gel-Free^240^Loose Tube^PS^13.80^162^^
-CORNING^ALTOS^^Gel-Free^252^Loose Tube^SJP^12.20^98^^
-CORNING^ALTOS^10001492^Gel-Free^264^Loose Tube^PDP^14.2^137^^
-CORNING^ALTOS^^Gel-Filled^276^Loose Tube^PDP^14.2^137^^
-CORNING^ALTOS^^Gel-Free^276^Loose Tube^PS^13.80^162^^
-CORNING^ALTOS^^Gel-Free^288^Loose Tube^SJP^15.80^162^^
-CORNING^ALTOS^^Gel-Free^300^Loose Tube^PDP^17.7^209^^
-CORNING^ALTOS^^Gel-Free^312^Loose Tube^PS^17.50^245^^
-CORNING^ALTOS^^Gel-Free^324^Loose Tube^SJP^15.80^162^^
-CORNING^ALTOS^10002112^Gel-Free^336^Loose Tube^PDP^17.7^209^^
-CORNING^ALTOS^^Gel-Filled^348^Loose Tube^PDP^17.7^209^^
-CORNING^ALTOS^^Gel-Free^348^Loose Tube^PS^17.50^245^^
-CORNING^ALTOS^^Gel-Free^360^Loose Tube^SJP^15.80^162^^
-CORNING^ALTOS^^Gel-Free^372^Loose Tube^PDP^17.7^209^^
-CORNING^ALTOS^^Gel-Free^384^Loose Tube^PS^17.50^245^^
-CORNING^ALTOS^^Gel-Free^396^Loose Tube^SJP^15.80^162^^
-CORNING^ALTOS^10002113^Gel-Free^408^Loose Tube^PDP^17.7^209^^
-CORNING^ALTOS^^Gel-Filled^420^Loose Tube^PDP^17.7^209^^
-CORNING^ALTOS^^Gel-Free^420^Loose Tube^PS^17.50^245^^
-CORNING^ALTOS^^Gel-Free^432^Loose Tube^PDP^17.9^195^^
-CORNING^ALTOS^^Gel-Free^444^Loose Tube^PS^17.70^233^^
-CORNING^ALTOS^^Gel-Free^456^Loose Tube^PDP^17.9^195^^
-CORNING^ALTOS^^Gel-Free^468^Loose Tube^PS^17.70^233^^
-CORNING^ALTOS^^Gel-Free^480^Loose Tube^PDP^17.9^195^^
-CORNING^ALTOS^^Gel-Free^492^Loose Tube^PS^17.70^233^^
-CORNING^ALTOS^^Gel-Free^504^Loose Tube^PDP^17.9^195^^
-CORNING^ALTOS^^Gel-Free^516^Loose Tube^PS^17.70^233^^
-CORNING^ALTOS^^Gel-Free^528^Loose Tube^PDP^17.9^195^^
-CORNING^ALTOS^^Gel-Free^540^Loose Tube^PS^17.70^233^^
-CORNING^ALTOS^^Gel-Free^552^Loose Tube^PDP^17.9^195^^
-CORNING^ALTOS^^Gel-Free^564^Loose Tube^PS^17.70^233^^
-CORNING^ALTOS^^Gel-Free^576^Loose Tube^PDP^20.1^249^^
-CORNING^ALTOS^^Gel-Free^588^Loose Tube^PS^20.00^293^^
-CORNING^ALTOS^^Gel-Free^600^Loose Tube^PDP^20.1^249^^
-CORNING^ALTOS^^Gel-Free^612^Loose Tube^PS^20.00^293^^
-CORNING^ALTOS^^Gel-Free^624^Loose Tube^PDP^20.1^249^^
-CORNING^ALTOS^^Gel-Free^636^Loose Tube^PS^20.00^293^^
-CORNING^ALTOS^^Gel-Free^648^Loose Tube^PDP^20.1^249^^
-CORNING^ALTOS^^Gel-Free^660^Loose Tube^PS^20.00^293^^
-CORNING^ALTOS^^Gel-Free^672^Loose Tube^PDP^20.1^249^^
-CORNING^ALTOS^^Gel-Free^684^Loose Tube^PS^20.00^293^^
-CORNING^ALTOS^^Gel-Free^288^Loose Tube^PDP^20.1^249^^
-CORNING^ALTOS^^Gel-Free^288^Loose Tube^PS^20.00^293^^
-CORNING^ALTOS^10002767^Gel-Free^288^Loose Tube^PDP^20.1^249^^
-CORNING^ALTOS^^Gel-Filled^288^Loose Tube^PDP^23.7^403^^
-CORNING^OLT 3^10002768^Gel-Free^432^Loose Tube^PDP^^^^
-CORNING^^10002154^^1^Pigtail^^^^^
-CORNING^^10002155^^1^Pigtail^^^^^
-CORNING^^10002156^^1^Pigtail^^^^^
-CORNING^^10002157^^1^Pigtail^^^^^
-CORNING^^10002158^^1^Pigtail^^^^^
-CORNING^^10002098^^8^Drop^SJP^^^^
-CORNING^^^^12^Central Tube^^^^^
-CORNING^^10002099^^12^Drop^SJP^^^^
-DRAKA^ezPREP^^Gel-Free^12^Loose Tube^TJP^10.60^79^^
-DRAKA^ezPREP^^Gel-Free^12^Loose Tube^SP^12.20^146^^
-DRAKA^ezPREP^^Gel-Free^12^Loose Tube^PSP^13.80^146^^
-DRAKA^ezPREP^^Gel-Free^12^Loose Tube^PDP^11.70^96^^
-DRAKA^ezPREP^^Gel-Free^24^Loose Tube^TJP^10.60^79^^
-DRAKA^ezPREP^^Gel-Free^36^Loose Tube^PS^12.20^146^^
-DRAKA^ezPREP^^Gel-Free^48^Loose Tube^PSP^13.80^146^^
-DRAKA^ezPREP^^Gel-Free^60^Loose Tube^PDP^11.70^96^^
-DRAKA^ezPREP^^Gel-Free^72^Loose Tube^TJP^10.60^79^^
-DRAKA^ezPREP^^Gel-Free^84^Loose Tube^PS^12.20^146^^
-DRAKA^ezPREP^^Gel-Free^96^Loose Tube^PSP^13.80^146^^
-DRAKA^ezPREP^^Gel-Free^108^Loose Tube^PDP^11.70^96^^
-DRAKA^ezPREP^^Gel-Free^120^Loose Tube^TJP^10.60^79^^
-DRAKA^ezPREP^^Gel-Free^132^Loose Tube^PS^12.20^146^^
-DRAKA^ezPREP^^Gel-Free^144^Loose Tube^PSP^13.80^146^^
-DRAKA^ezPREP^^Gel-Free^156^Loose Tube^PDP^11.70^96^^
-DRAKA^ezPREP^^Gel-Free^168^Loose Tube^TJP^10.60^79^^
-DRAKA^ezPREP^^Gel-Free^180^Loose Tube^PS^12.20^146^^
-DRAKA^ezPREP^^Gel-Free^192^Loose Tube^PSP^13.80^146^^
-DRAKA^ezPREP^^Gel-Free^204^Loose Tube^PDP^11.70^96^^
-DRAKA^ezPREP^^Gel-Free^216^Loose Tube^TJP^11.50^94^^
-DRAKA^ezPREP^^Gel-Free^228^Loose Tube^PS^13.00^162^^
-DRAKA^ezPREP^^Gel-Free^240^Loose Tube^PSP^14.50^162^^
-DRAKA^ezPREP^^Gel-Free^252^Loose Tube^PDP^12.20^108^^
-DRAKA^ezPREP^^Gel-Free^264^Loose Tube^TJP^12.30^107^^
-DRAKA^ezPREP^^Gel-Free^276^Loose Tube^PS^14.00^182^^
-DRAKA^ezPREP^^Gel-Free^288^Loose Tube^PSP^15.50^182^^
-DRAKA^ezPREP^^Gel-Free^300^Loose Tube^PDP^13.00^118^^
-DRAKA^ezPREP^^Gel-Free^312^Loose Tube^TJP^13.40^122^^
-DRAKA^ezPREP^^Gel-Free^324^Loose Tube^PS^15.00^201^^
-DRAKA^ezPREP^^Gel-Free^336^Loose Tube^PSP^16.60^201^^
-DRAKA^ezPREP^^Gel-Free^348^Loose Tube^PDP^13.80^133^^
-DRAKA^ezPREP^^Gel-Free^360^Loose Tube^TJP^14.20^134^^
-DRAKA^ezPREP^^Gel-Free^372^Loose Tube^PS^15.80^218^^
-DRAKA^ezPREP^^Gel-Free^384^Loose Tube^PSP^17.30^218^^
-DRAKA^ezPREP^^Gel-Free^396^Loose Tube^PDP^14.80^153^^
-DRAKA^ezPREP^^Gel-Free^408^Loose Tube^TJP^15.10^147^^
-DRAKA^ezPREP^^Gel-Free^420^Loose Tube^PS^16.80^240^^
-DRAKA^ezPREP^^Gel-Free^432^Loose Tube^PSP^18.30^240^^
-DRAKA^ezPREP^^Gel-Free^444^Loose Tube^PDP^15.40^165^^
-DRAKA^ezPREP^^Gel-Free^456^Loose Tube^TJP^16.10^162^^
-DRAKA^ezPREP^^Gel-Free^468^Loose Tube^PS^17.60^255^^
-DRAKA^ezPREP^^Gel-Free^480^Loose Tube^PSP^19.10^315^^
-DRAKA^ezPREP^^Gel-Free^492^Loose Tube^PDP^16.30^184^^
-DRAKA^ezPREP^^Gel-Free^504^Loose Tube^TJP^16.90^187^^
-DRAKA^ezPREP^^Gel-Free^516^Loose Tube^PS^18.60^291^^
-DRAKA^ezPREP^^Gel-Free^528^Loose Tube^PSP^20.10^356^^
-DRAKA^ezPREP^^Gel-Free^540^Loose Tube^PDP^17.10^198^^
-DRAKA^ezPREP^^Gel-Free^552^Loose Tube^TJP^16.90^187^^
-DRAKA^ezPREP^^Gel-Free^564^Loose Tube^PS^18.60^291^^
-DRAKA^ezPREP^^Gel-Free^576^Loose Tube^PSP^20.10^356^^
-DRAKA^ezPREP^^Gel-Free^588^Loose Tube^PDP^17.10^204^^
-DRAKA^ezPREP^^Gel-Free^600^Loose Tube^TJP^16.90^187^^
-DRAKA^ezPREP^^Gel-Free^612^Loose Tube^PS^18.60^291^^
-DRAKA^ezPREP^^Gel-Free^624^Loose Tube^PSP^20.10^356^^
-DRAKA^ezPREP^^Gel-Free^636^Loose Tube^PDP^14.50^204^^
-DRAKA^ezPREP^^Gel-Free^648^Loose Tube^TJP^16.90^187^^
-DRAKA^ezPREP^^Gel-Free^660^Loose Tube^PS^18.60^291^^
-DRAKA^ezPREP^^Gel-Free^672^Loose Tube^PSP^20.10^356^^
-DRAKA^ezPREP^^Gel-Free^684^Loose Tube^PDP^14.50^204^^
-DRAKA^ezPREP^^Gel-Free^696^Loose Tube^TJP^16.90^187^^
-DRAKA^ezPREP^^Gel-Free^708^Loose Tube^PS^18.60^291^^
-DRAKA^ezPREP^^Gel-Free^720^Loose Tube^PSP^20.10^356^^
-DRAKA^ezPREP^^Gel-Free^732^Loose Tube^PDP^14.50^204^^
-DRAKA^ezPREP^^Gel-Free^744^Loose Tube^TJP^16.90^187^^
-DRAKA^ezPREP^^Gel-Free^756^Loose Tube^PS^18.60^291^^
-DRAKA^ezPREP^^Gel-Free^768^Loose Tube^PSP^20.10^356^^
-DRAKA^ezPREP^^Gel-Free^780^Loose Tube^PDP^14.50^204^^
-DRAKA^ezPREP^^Gel-Free^792^Loose Tube^TJP^16.90^187^^
-DRAKA^ezPREP^^Gel-Free^804^Loose Tube^PS^18.60^291^^
-DRAKA^ezPREP^^Gel-Free^816^Loose Tube^PSP^20.10^356^^
-DRAKA^ezPREP^^Gel-Free^828^Loose Tube^PDP^14.50^204^^
-DRAKA^ezPREP^^Gel-Free^840^Loose Tube^TJP^18.90^228^^
-DRAKA^ezPREP^^Gel-Free^852^Loose Tube^PS^20.60^344^^
-DRAKA^ezPREP^^Gel-Free^864^Loose Tube^PSP^22.10^421^^
-DRAKA^ezPREP^^Gel-Free^876^Loose Tube^PDP^18.70^237^^
-DRAKA^ezPREP^^Gel-Free^888^Loose Tube^TJP^18.90^228^^
-DRAKA^ezPREP^^Gel-Free^900^Loose Tube^PS^20.60^344^^
-DRAKA^ezPREP^^Gel-Free^912^Loose Tube^PSP^22.10^421^^
-DRAKA^ezPREP^^Gel-Free^924^Loose Tube^PDP^18.70^237^^
-DRAKA^ezPREP^^Gel-Free^936^Loose Tube^TJP^18.90^228^^
-DRAKA^ezPREP^^Gel-Free^948^Loose Tube^PS^20.60^344^^
-DRAKA^ezPREP^^Gel-Free^960^Loose Tube^PSP^22.10^421^^
-DRAKA^ezPREP^^Gel-Free^972^Loose Tube^PDP^18.70^237^^
-DRAKA^ezPREP^^Gel-Free^984^Loose Tube^TJP^18.90^228^^
-DRAKA^ezPREP^^Gel-Free^996^Loose Tube^PS^20.60^344^^
-DRAKA^ezPREP^^Gel-Free^1008^Loose Tube^PSP^22.10^421^^
-DRAKA^ezPREP^^Gel-Free^1020^Loose Tube^PDP^18.70^237^^
-DRAKA^ezPREP^^Gel-Free^1032^Loose Tube^TJP^19.60^248^^
-DRAKA^ezPREP^^Gel-Free^1044^Loose Tube^PS^21.40^360^^
-DRAKA^ezPREP^^Gel-Free^1056^Loose Tube^PSP^22.90^438^^
-DRAKA^ezPREP^^Gel-Free^1068^Loose Tube^PDP^19.80^266^^
-DRAKA^ezPREP^^Gel-Free^1080^Loose Tube^TJP^19.60^248^^
-DRAKA^ezPREP^^Gel-Free^1092^Loose Tube^PS^21.40^360^^
-DRAKA^ezPREP^^Gel-Free^1104^Loose Tube^PSP^22.90^439^^
-DRAKA^ezPREP^^Gel-Free^1116^Loose Tube^PDP^19.80^266^^
-DRAKA^ezPREP^^Gel-Free^432^Loose Tube^TJP^18.60^228^^
-DRAKA^ezPREP^^Gel-Free^432^Loose Tube^PS^20.30^335^^
-DRAKA^ezPREP^^Gel-Free^432^Loose Tube^PSP^22.10^415^^
-DRAKA^RegMD2^^^8^Micro Unitube^SP^9.80^110^^
-DRAKA^RegMD2^^^12^Micro Unitube^SP^9.80^110^^
-NTL^LITETUBE^^^6^Loose Tube^PSP^^^^
-NTL^LITETUBE^^^8^Loose Tube^PSP^^^^
-NTL^LITETUBE^^^12^Loose Tube^PSP^^^^
-NTL^LITETUBE^^^12^Loose Tube^PSP^^^^
-NTL^LITETUBE^^^16^Loose Tube^PSP^^^^
-NTL^LITETUBE^^^16^Loose Tube^PSP^^^^
-NTL^LITETUBE^^^20^Loose Tube^PSP^^^^
-NTL^LITETUBE^^^20^Loose Tube^PSP^^^^
-NTL^LITETUBE^^^44^Loose Tube^PSP^^^^
-NTL^LITETUBE^^^52^Loose Tube^PSP^^^^
-NTL^LITETUBE^^^92^Loose Tube^PSP^^^^
-NTL^LITETUBE^^^104^Loose Tube^PSP^^^^
-NTL^TUBESTAR^^^16^Loose Tube^PSPSP^^^^
-NTL^TUBESTAR^^^36^Loose Tube^PSP^^^^
-NTL^TUBESTAR^^^48^Loose Tube^PSP^^^^
-NTL^TUBESTAR^^^48^Loose Tube^PSPSP^^^^
-NTL^TUBESTAR^^^72^Loose Tube^PSP^^^^
-NTL^TUBESTAR^^^72^Loose Tube^PSP^^^^
-NTL^TUBESTAR^^^72^Loose Tube^PSP^^^^
-SIECOR^LITETUBE^^^144^Loose Tube^PSP^^^^
-SIECOR^MAXI-BUNDLE^^^6^Loose Tube^^^^^
-SIECOR^^^^4^Loose Tube^^^^^
-SIECOR^^^^6^Loose Tube^^^^^
-SIECOR^^^^12^Loose Tube^^^^^
-SIECOR^^^^108^Loose Tube^PSP^^^^
-SUMITOMO^LITEPIPE ARMOLUX^^Gel-Filled^6^Ribbon^SP^14^207^^
-SUMITOMO^LITEPIPE ARMOLUX^^Gel-Filled^12^Ribbon^SP^14^207^^
-^^^^^^^^^^
+Manufacturer,Model,Type,Fibre Quantity,Construction,Armor,Diameter,Sag Allowance,Helix Factor,Fibre Number Scheme,Bundle Number Scheme
+CORNING,ALTOS,Gel-Free,12,Loose Tube,PDP,12.5,,,Default,Default
+CORNING,ALTOS,Gel-Filled,12,Loose Tube,PDP,12.5,,,Default,Default
+CORNING,ALTOS,Gel-Free,24,Loose Tube,PDP,17.7,,,Default,Default
+CORNING,ALTOS,Gel-Free,48,Loose Tube,PDP,12.5,,,Default,Default
+CORNING,ALTOS,Gel-Filled,60,Loose Tube,PDP,12.5,,,Default,Default
+CORNING,ALTOS,Gel-Free,84,Loose Tube,PDP,12.5,,,Default,Default
+CORNING,ALTOS,Gel-Filled,96,Loose Tube,PDP,12.5,,,Default,Default
+CORNING,ALTOS,Gel-Free,120,Loose Tube,PDP,12.5,,,Default,Default
+CORNING,ALTOS,Gel-Filled,132,Loose Tube,PDP,12.5,,,Default,Default
+CORNING,ALTOS,Gel-Free,156,Loose Tube,PDP,12.5,,,Default,Default
+CORNING,ALTOS,Gel-Filled,168,Loose Tube,PDP,12.5,,,Default,Default
+CORNING,ALTOS,Gel-Free,192,Loose Tube,PDP,12.5,,,Default,Default
+CORNING,ALTOS,Gel-Filled,204,Loose Tube,PDP,12.5,,,Default,Default
+CORNING,ALTOS,Gel-Free,228,Loose Tube,PDP,14.2,,,Default,Default
+CORNING,ALTOS,Gel-Filled,240,Loose Tube,PDP,14.2,,,Default,Default
+CORNING,ALTOS,Gel-Free,264,Loose Tube,PDP,14.2,,,Default,Default
+CORNING,ALTOS,Gel-Filled,276,Loose Tube,PDP,14.2,,,Default,Default
+CORNING,ALTOS,Gel-Free,300,Loose Tube,PDP,17.7,,,Default,Default
+CORNING,ALTOS,Gel-Free,336,Loose Tube,PDP,17.7,,,Default,Default
+CORNING,ALTOS,Gel-Filled,348,Loose Tube,PDP,17.7,,,Default,Default
+CORNING,ALTOS,Gel-Free,372,Loose Tube,PDP,17.7,,,Default,Default
+CORNING,ALTOS,Gel-Free,408,Loose Tube,PDP,17.7,,,Default,Default
+CORNING,ALTOS,Gel-Filled,420,Loose Tube,PDP,17.7,,,Default,Default
+CORNING,ALTOS,Gel-Free,432,Loose Tube,PDP,17.9,,,Default,Default
+CORNING,ALTOS,Gel-Free,456,Loose Tube,PDP,17.9,,,Default,Default
+CORNING,ALTOS,Gel-Free,480,Loose Tube,PDP,17.9,,,Default,Default
+CORNING,ALTOS,Gel-Free,504,Loose Tube,PDP,17.9,,,Default,Default
+CORNING,ALTOS,Gel-Free,528,Loose Tube,PDP,17.9,,,Default,Default
+CORNING,ALTOS,Gel-Free,552,Loose Tube,PDP,17.9,,,Default,Default
+CORNING,ALTOS,Gel-Free,576,Loose Tube,PDP,20.1,,,Default,Default
+CORNING,ALTOS,Gel-Free,600,Loose Tube,PDP,20.1,,,Default,Default
+CORNING,ALTOS,Gel-Free,624,Loose Tube,PDP,20.1,,,Default,Default
+CORNING,ALTOS,Gel-Free,648,Loose Tube,PDP,20.1,,,Default,Default
+CORNING,ALTOS,Gel-Free,672,Loose Tube,PDP,20.1,,,Default,Default
+CORNING,ALTOS,Gel-Free,288,Loose Tube,PDP,20.1,,,Default,Default
+CORNING,ALTOS,Gel-Free,288,Loose Tube,PDP,20.1,,,Default,Default
+CORNING,ALTOS,Gel-Filled,288,Loose Tube,PDP,23.7,,,Default,Default
+CORNING,ALTOS,Gel-Free,12,Loose Tube,PS,12.1,,,Default,Default
+CORNING,ALTOS,Gel-Free,60,Loose Tube,PS,12.1,,,Default,Default
+CORNING,ALTOS,Gel-Free,96,Loose Tube,PS,12.1,,,Default,Default
+CORNING,ALTOS,Gel-Free,132,Loose Tube,PS,12.1,,,Default,Default
+CORNING,ALTOS,Gel-Free,168,Loose Tube,PS,12.1,,,Default,Default
+CORNING,ALTOS,Gel-Free,204,Loose Tube,PS,12.1,,,Default,Default
+CORNING,ALTOS,Gel-Free,240,Loose Tube,PS,13.8,,,Default,Default
+CORNING,ALTOS,Gel-Free,276,Loose Tube,PS,13.8,,,Default,Default
+CORNING,ALTOS,Gel-Free,312,Loose Tube,PS,17.5,,,Default,Default
+CORNING,ALTOS,Gel-Free,348,Loose Tube,PS,17.5,,,Default,Default
+CORNING,ALTOS,Gel-Free,384,Loose Tube,PS,17.5,,,Default,Default
+CORNING,ALTOS,Gel-Free,420,Loose Tube,PS,17.5,,,Default,Default
+CORNING,ALTOS,Gel-Free,444,Loose Tube,PS,17.7,,,Default,Default
+CORNING,ALTOS,Gel-Free,468,Loose Tube,PS,17.7,,,Default,Default
+CORNING,ALTOS,Gel-Free,492,Loose Tube,PS,17.7,,,Default,Default
+CORNING,ALTOS,Gel-Free,516,Loose Tube,PS,17.7,,,Default,Default
+CORNING,ALTOS,Gel-Free,540,Loose Tube,PS,17.7,,,Default,Default
+CORNING,ALTOS,Gel-Free,564,Loose Tube,PS,17.7,,,Default,Default
+CORNING,ALTOS,Gel-Free,588,Loose Tube,PS,20,,,Default,Default
+CORNING,ALTOS,Gel-Free,612,Loose Tube,PS,20,,,Default,Default
+CORNING,ALTOS,Gel-Free,636,Loose Tube,PS,20,,,Default,Default
+CORNING,ALTOS,Gel-Free,660,Loose Tube,PS,20,,,Default,Default
+CORNING,ALTOS,Gel-Free,684,Loose Tube,PS,20,,,Default,Default
+CORNING,ALTOS,Gel-Free,288,Loose Tube,PS,20,,,Default,Default
+CORNING,ALTOS,Gel-Free,12,Loose Tube,SJP,10.5,,,Default,Default
+CORNING,ALTOS,Gel-Free,36,Loose Tube,SJP,10.5,,,Default,Default
+CORNING,ALTOS,Gel-Free,72,Loose Tube,SJP,10.5,,,Default,Default
+CORNING,ALTOS,Gel-Free,108,Loose Tube,SJP,10.5,,,Default,Default
+CORNING,ALTOS,Gel-Free,144,Loose Tube,SJP,10.5,,,Default,Default
+CORNING,ALTOS,Gel-Free,180,Loose Tube,SJP,10.5,,,Default,Default
+CORNING,ALTOS,Gel-Free,216,Loose Tube,SJP,12.2,,,Default,Default
+CORNING,ALTOS,Gel-Free,252,Loose Tube,SJP,12.2,,,Default,Default
+CORNING,ALTOS,Gel-Free,288,Loose Tube,SJP,15.8,,,Default,Default
+CORNING,ALTOS,Gel-Free,324,Loose Tube,SJP,15.8,,,Default,Default
+CORNING,ALTOS,Gel-Free,360,Loose Tube,SJP,15.8,,,Default,Default
+CORNING,ALTOS,Gel-Free,396,Loose Tube,SJP,15.8,,,Default,Default
+DRAKA,ezPREP,Gel-Free,12,Loose Tube,PDP,11.7,,,Default,Default
+DRAKA,ezPREP,Gel-Free,60,Loose Tube,PDP,11.7,,,Default,Default
+DRAKA,ezPREP,Gel-Free,108,Loose Tube,PDP,11.7,,,Default,Default
+DRAKA,ezPREP,Gel-Free,156,Loose Tube,PDP,11.7,,,Default,Default
+DRAKA,ezPREP,Gel-Free,204,Loose Tube,PDP,11.7,,,Default,Default
+DRAKA,ezPREP,Gel-Free,252,Loose Tube,PDP,12.2,,,Default,Default
+DRAKA,ezPREP,Gel-Free,300,Loose Tube,PDP,13,,,Default,Default
+DRAKA,ezPREP,Gel-Free,348,Loose Tube,PDP,13.8,,,Default,Default
+DRAKA,ezPREP,Gel-Free,396,Loose Tube,PDP,14.8,,,Default,Default
+DRAKA,ezPREP,Gel-Free,444,Loose Tube,PDP,15.4,,,Default,Default
+DRAKA,ezPREP,Gel-Free,492,Loose Tube,PDP,16.3,,,Default,Default
+DRAKA,ezPREP,Gel-Free,540,Loose Tube,PDP,17.1,,,Default,Default
+DRAKA,ezPREP,Gel-Free,588,Loose Tube,PDP,17.1,,,Default,Default
+DRAKA,ezPREP,Gel-Free,636,Loose Tube,PDP,14.5,,,Default,Default
+DRAKA,ezPREP,Gel-Free,684,Loose Tube,PDP,14.5,,,Default,Default
+DRAKA,ezPREP,Gel-Free,732,Loose Tube,PDP,14.5,,,Default,Default
+DRAKA,ezPREP,Gel-Free,780,Loose Tube,PDP,14.5,,,Default,Default
+DRAKA,ezPREP,Gel-Free,828,Loose Tube,PDP,14.5,,,Default,Default
+DRAKA,ezPREP,Gel-Free,876,Loose Tube,PDP,18.7,,,Default,Default
+DRAKA,ezPREP,Gel-Free,924,Loose Tube,PDP,18.7,,,Default,Default
+DRAKA,ezPREP,Gel-Free,972,Loose Tube,PDP,18.7,,,Default,Default
+DRAKA,ezPREP,Gel-Free,1020,Loose Tube,PDP,18.7,,,Default,Default
+DRAKA,ezPREP,Gel-Free,1068,Loose Tube,PDP,19.8,,,Default,Default
+DRAKA,ezPREP,Gel-Free,1116,Loose Tube,PDP,19.8,,,Default,Default
+DRAKA,ezPREP,Gel-Free,36,Loose Tube,PS,12.2,,,Default,Default
+DRAKA,ezPREP,Gel-Free,84,Loose Tube,PS,12.2,,,Default,Default
+DRAKA,ezPREP,Gel-Free,132,Loose Tube,PS,12.2,,,Default,Default
+DRAKA,ezPREP,Gel-Free,180,Loose Tube,PS,12.2,,,Default,Default
+DRAKA,ezPREP,Gel-Free,228,Loose Tube,PS,13,,,Default,Default
+DRAKA,ezPREP,Gel-Free,276,Loose Tube,PS,14,,,Default,Default
+DRAKA,ezPREP,Gel-Free,324,Loose Tube,PS,15,,,Default,Default
+DRAKA,ezPREP,Gel-Free,372,Loose Tube,PS,15.8,,,Default,Default
+DRAKA,ezPREP,Gel-Free,420,Loose Tube,PS,16.8,,,Default,Default
+DRAKA,ezPREP,Gel-Free,468,Loose Tube,PS,17.6,,,Default,Default
+DRAKA,ezPREP,Gel-Free,516,Loose Tube,PS,18.6,,,Default,Default
+DRAKA,ezPREP,Gel-Free,564,Loose Tube,PS,18.6,,,Default,Default
+DRAKA,ezPREP,Gel-Free,612,Loose Tube,PS,18.6,,,Default,Default
+DRAKA,ezPREP,Gel-Free,660,Loose Tube,PS,18.6,,,Default,Default
+DRAKA,ezPREP,Gel-Free,708,Loose Tube,PS,18.6,,,Default,Default
+DRAKA,ezPREP,Gel-Free,756,Loose Tube,PS,18.6,,,Default,Default
+DRAKA,ezPREP,Gel-Free,804,Loose Tube,PS,18.6,,,Default,Default
+DRAKA,ezPREP,Gel-Free,852,Loose Tube,PS,20.6,,,Default,Default
+DRAKA,ezPREP,Gel-Free,900,Loose Tube,PS,20.6,,,Default,Default
+DRAKA,ezPREP,Gel-Free,948,Loose Tube,PS,20.6,,,Default,Default
+DRAKA,ezPREP,Gel-Free,996,Loose Tube,PS,20.6,,,Default,Default
+DRAKA,ezPREP,Gel-Free,1044,Loose Tube,PS,21.4,,,Default,Default
+DRAKA,ezPREP,Gel-Free,1092,Loose Tube,PS,21.4,,,Default,Default
+DRAKA,ezPREP,Gel-Free,432,Loose Tube,PS,20.3,,,Default,Default
+DRAKA,ezPREP,Gel-Free,12,Loose Tube,PSP,13.8,,,Default,Default
+DRAKA,ezPREP,Gel-Free,48,Loose Tube,PSP,13.8,,,Default,Default
+DRAKA,ezPREP,Gel-Free,96,Loose Tube,PSP,13.8,,,Default,Default
+DRAKA,ezPREP,Gel-Free,144,Loose Tube,PSP,13.8,,,Default,Default
+DRAKA,ezPREP,Gel-Free,192,Loose Tube,PSP,13.8,,,Default,Default
+DRAKA,ezPREP,Gel-Free,240,Loose Tube,PSP,14.5,,,Default,Default
+DRAKA,ezPREP,Gel-Free,288,Loose Tube,PSP,15.5,,,Default,Default
+DRAKA,ezPREP,Gel-Free,336,Loose Tube,PSP,16.6,,,Default,Default
+DRAKA,ezPREP,Gel-Free,384,Loose Tube,PSP,17.3,,,Default,Default
+DRAKA,ezPREP,Gel-Free,432,Loose Tube,PSP,18.3,,,Default,Default
+DRAKA,ezPREP,Gel-Free,480,Loose Tube,PSP,19.1,,,Default,Default
+DRAKA,ezPREP,Gel-Free,528,Loose Tube,PSP,20.1,,,Default,Default
+DRAKA,ezPREP,Gel-Free,576,Loose Tube,PSP,20.1,,,Default,Default
+DRAKA,ezPREP,Gel-Free,624,Loose Tube,PSP,20.1,,,Default,Default
+DRAKA,ezPREP,Gel-Free,672,Loose Tube,PSP,20.1,,,Default,Default
+DRAKA,ezPREP,Gel-Free,720,Loose Tube,PSP,20.1,,,Default,Default
+DRAKA,ezPREP,Gel-Free,768,Loose Tube,PSP,20.1,,,Default,Default
+DRAKA,ezPREP,Gel-Free,816,Loose Tube,PSP,20.1,,,Default,Default
+DRAKA,ezPREP,Gel-Free,864,Loose Tube,PSP,22.1,,,Default,Default
+DRAKA,ezPREP,Gel-Free,912,Loose Tube,PSP,22.1,,,Default,Default
+DRAKA,ezPREP,Gel-Free,960,Loose Tube,PSP,22.1,,,Default,Default
+DRAKA,ezPREP,Gel-Free,1008,Loose Tube,PSP,22.1,,,Default,Default
+DRAKA,ezPREP,Gel-Free,1056,Loose Tube,PSP,22.9,,,Default,Default
+DRAKA,ezPREP,Gel-Free,1104,Loose Tube,PSP,22.9,,,Default,Default
+DRAKA,ezPREP,Gel-Free,432,Loose Tube,PSP,22.1,,,Default,Default
+DRAKA,ezPREP,Gel-Free,12,Loose Tube,SP,12.2,,,Default,Default
+DRAKA,ezPREP,Gel-Free,12,Loose Tube,TJP,10.6,,,Default,Default
+DRAKA,ezPREP,Gel-Free,24,Loose Tube,TJP,10.6,,,Default,Default
+DRAKA,ezPREP,Gel-Free,72,Loose Tube,TJP,10.6,,,Default,Default
+DRAKA,ezPREP,Gel-Free,120,Loose Tube,TJP,10.6,,,Default,Default
+DRAKA,ezPREP,Gel-Free,168,Loose Tube,TJP,10.6,,,Default,Default
+DRAKA,ezPREP,Gel-Free,216,Loose Tube,TJP,11.5,,,Default,Default
+DRAKA,ezPREP,Gel-Free,264,Loose Tube,TJP,12.3,,,Default,Default
+DRAKA,ezPREP,Gel-Free,312,Loose Tube,TJP,13.4,,,Default,Default
+DRAKA,ezPREP,Gel-Free,360,Loose Tube,TJP,14.2,,,Default,Default
+DRAKA,ezPREP,Gel-Free,408,Loose Tube,TJP,15.1,,,Default,Default
+DRAKA,ezPREP,Gel-Free,456,Loose Tube,TJP,16.1,,,Default,Default
+DRAKA,ezPREP,Gel-Free,504,Loose Tube,TJP,16.9,,,Default,Default
+DRAKA,ezPREP,Gel-Free,552,Loose Tube,TJP,16.9,,,Default,Default
+DRAKA,ezPREP,Gel-Free,600,Loose Tube,TJP,16.9,,,Default,Default
+DRAKA,ezPREP,Gel-Free,648,Loose Tube,TJP,16.9,,,Default,Default
+DRAKA,ezPREP,Gel-Free,696,Loose Tube,TJP,16.9,,,Default,Default
+DRAKA,ezPREP,Gel-Free,744,Loose Tube,TJP,16.9,,,Default,Default
+DRAKA,ezPREP,Gel-Free,792,Loose Tube,TJP,16.9,,,Default,Default
+DRAKA,ezPREP,Gel-Free,840,Loose Tube,TJP,18.9,,,Default,Default
+DRAKA,ezPREP,Gel-Free,888,Loose Tube,TJP,18.9,,,Default,Default
+DRAKA,ezPREP,Gel-Free,936,Loose Tube,TJP,18.9,,,Default,Default
+DRAKA,ezPREP,Gel-Free,984,Loose Tube,TJP,18.9,,,Default,Default
+DRAKA,ezPREP,Gel-Free,1032,Loose Tube,TJP,19.6,,,Default,Default
+DRAKA,ezPREP,Gel-Free,1080,Loose Tube,TJP,19.6,,,Default,Default
+DRAKA,ezPREP,Gel-Free,432,Loose Tube,TJP,18.6,,,Default,Default
+SUMITOMO,LITEPIPE ARMOLUX,Gel-Filled,6,Ribbon,SP,14,,,Default,Default
+SUMITOMO,LITEPIPE ARMOLUX,Gel-Filled,12,Ribbon,SP,14,,,Default,Default
+NTL,LITETUBE,Other,6,Loose Tube,PSP,,,,Default,Default
+NTL,LITETUBE,Other,8,Loose Tube,PSP,,,,Default,Default
+NTL,LITETUBE,Other,12,Loose Tube,PSP,,,,Default,Default
+NTL,LITETUBE,Other,12,Loose Tube,PSP,,,,Default,Default
+NTL,LITETUBE,Other,16,Loose Tube,PSP,,,,Default,Default
+NTL,LITETUBE,Other,16,Loose Tube,PSP,,,,Default,Default
+NTL,LITETUBE,Other,20,Loose Tube,PSP,,,,Default,Default
+NTL,LITETUBE,Other,20,Loose Tube,PSP,,,,Default,Default
+NTL,LITETUBE,Other,44,Loose Tube,PSP,,,,Default,Default
+NTL,LITETUBE,Other,52,Loose Tube,PSP,,,,Default,Default
+NTL,LITETUBE,Other,92,Loose Tube,PSP,,,,Default,Default
+NTL,LITETUBE,Other,104,Loose Tube,PSP,,,,Default,Default
+SIECOR,LITETUBE,Other,144,Loose Tube,PSP,,,,Default,Default
+SIECOR,MAXI-BUNDLE,Other,6,Loose Tube,Unknown,,,,Default,Default
+CORNING,OLT 3,Gel-Free,432,Loose Tube,PDP,,,,Default,Default
+DRAKA,RegMD2,Other,8,Micro Unitube,SP,9.8,,,Default,Default
+DRAKA,RegMD2,Other,12,Micro Unitube,SP,9.8,,,Default,Default
+NTL,TUBESTAR,Other,36,Loose Tube,PSP,,,,Default,Default
+NTL,TUBESTAR,Other,48,Loose Tube,PSP,,,,Default,Default
+NTL,TUBESTAR,Other,72,Loose Tube,PSP,,,,Default,Default
+NTL,TUBESTAR,Other,72,Loose Tube,PSP,,,,Default,Default
+NTL,TUBESTAR,Other,72,Loose Tube,PSP,,,,Default,Default
+NTL,TUBESTAR,Other,16,Loose Tube,PSPSP,,,,Default,Default
+NTL,TUBESTAR,Other,48,Loose Tube,PSPSP,,,,Default,Default
+ALCATEL,Not Provided,Other,24,LOOSETUBE,PDP,,,,Default,Default
+ALCATEL,Not Provided,Other,192,LOOSETUBE,PDP,,,,Default,Default
+ALCATEL,Not Provided,Other,228,LOOSETUBE,PDP,,,,Default,Default
+ALCATEL,Not Provided,Gel-Filled,12,UNITUBE,PDP,,,,Default,Default
+ALCATEL,Not Provided,Gel-Filled,12,UNITUBE,PDP,,,,Default,Default
+ALCATEL,Not Provided,Gel-Filled,24,UNITUBE,PDP,,,,Default,Default
+ALCATEL,Not Provided,Gel-Filled,36,UNITUBE,PDP,,,,Default,Default
+ALCATEL,Not Provided,Other,36,UNITUBE,PDP,,,,Default,Default
+ALCATEL,Not Provided,Other,8,Loose Tube,PSP,,,,Default,Default
+ALCATEL,Not Provided,Other,12,Loose Tube,PSP,,,,Default,Default
+ALCATEL,Not Provided,Other,56,Loose Tube,PSP,,,,Default,Default
+ALCATEL,Not Provided,Other,72,Loose Tube,PSP,,,,Default,Default
+SIECOR,Not Provided,Other,108,Loose Tube,PSP,,,,Default,Default
+ALCATEL,Not Provided,Other,6,LOOSETUBE,PSP,,,,Default,Default
+ALCATEL,Not Provided,Other,6,LOOSETUBE,PSP,,,,Default,Default
+ALCATEL,Not Provided,Other,8,LOOSETUBE,PSP,,,,Default,Default
+ALCATEL,Not Provided,Other,8,LOOSETUBE,PSP,,,,Default,Default
+ALCATEL,Not Provided,Other,12,LOOSETUBE,PSP,,,,Default,Default
+ALCATEL,Not Provided,Other,12,LOOSETUBE,PSP,,,,Default,Default
+ALCATEL,Not Provided,Other,12,LOOSETUBE,PSP,,,,Default,Default
+ALCATEL,Not Provided,Other,16,LOOSETUBE,PSP,,,,Default,Default
+ALCATEL,Not Provided,Other,16,LOOSETUBE,PSP,,,,Default,Default
+ALCATEL,Not Provided,Other,16,LOOSETUBE,PSP,,,,Default,Default
+ALCATEL,Not Provided,Other,16,LOOSETUBE,PSP,,,,Default,Default
+ALCATEL,Not Provided,Other,16,LOOSETUBE,PSP,,,,Default,Default
+ALCATEL,Not Provided,Other,16,LOOSETUBE,PSP,,,,Default,Default
+ALCATEL,Not Provided,Other,18,LOOSETUBE,PSP,,,,Default,Default
+ALCATEL,Not Provided,Other,20,LOOSETUBE,PSP,,,,Default,Default
+ALCATEL,Not Provided,Other,20,LOOSETUBE,PSP,,,,Default,Default
+ALCATEL,Not Provided,Other,24,LOOSETUBE,PSP,,,,Default,Default
+ALCATEL,Not Provided,Other,24,LOOSETUBE,PSP,,,,Default,Default
+ALCATEL,Not Provided,Other,28,LOOSETUBE,PSP,,,,Default,Default
+ALCATEL,Not Provided,Other,32,LOOSETUBE,PSP,,,,Default,Default
+ALCATEL,Not Provided,Other,32,LOOSETUBE,PSP,,,,Default,Default
+ALCATEL,Not Provided,Other,32,LOOSETUBE,PSP,,,,Default,Default
+ALCATEL,Not Provided,Other,32,LOOSETUBE,PSP,,,,Default,Default
+ALCATEL,Not Provided,Other,36,LOOSETUBE,PSP,,,,Default,Default
+ALCATEL,Not Provided,Other,36,LOOSETUBE,PSP,,,,Default,Default
+ALCATEL,Not Provided,Other,48,LOOSETUBE,PSP,,,,Default,Default
+ALCATEL,Not Provided,Other,48,LOOSETUBE,PSP,,,,Default,Default
+ALCATEL,Not Provided,Other,52,LOOSETUBE,PSP,,,,Default,Default
+ALCATEL,Not Provided,Other,60,LOOSETUBE,PSP,,,,Default,Default
+ALCATEL,Not Provided,Other,64,LOOSETUBE,PSP,,,,Default,Default
+ALCATEL,Not Provided,Other,64,LOOSETUBE,PSP,,,,Default,Default
+ALCATEL,Not Provided,Other,80,LOOSETUBE,PSP,,,,Default,Default
+ALCATEL,Not Provided,Other,84,LOOSETUBE,PSP,,,,Default,Default
+ALCATEL,Not Provided,Other,88,LOOSETUBE,PSP,,,,Default,Default
+ALCATEL,Not Provided,Other,96,LOOSETUBE,PSP,,,,Default,Default
+ALCATEL,Not Provided,Other,96,LOOSETUBE,PSP,,,,Default,Default
+ALCATEL,Not Provided,Other,108,LOOSETUBE,PSP,,,,Default,Default
+ALCATEL,Not Provided,Other,112,LOOSETUBE,PSP,,,,Default,Default
+ALCATEL,Not Provided,Other,120,LOOSETUBE,PSP,,,,Default,Default
+ALCATEL,Not Provided,Other,144,LOOSETUBE,PSP,,,,Default,Default
+ALCATEL,Not Provided,Other,192,LOOSETUBE,PSP,,,,Default,Default
+CORNING,Not Provided,Other,8,Drop,SJP,,,,Default,Default
+CORNING,Not Provided,Other,12,Drop,SJP,,,,Default,Default
+ALCATEL,Not Provided,Other,72,LOOSETUBE,SJP,,,,Default,Default
+ALCATEL,Not Provided,Other,156,Loose Tube,SP,,,,Default,Default
+ALCATEL,Not Provided,Other,24,LOOSETUBE,SP,,,,Default,Default
+ALCATEL,Not Provided,Other,36,LOOSETUBE,SP,,,,Default,Default
+ALCATEL,Not Provided,Other,168,LOOSETUBE,SP,,,,Default,Default
+ALCATEL,Not Provided,Other,288,LOOSETUBE,SP,,,,Default,Default
+ALCATEL,Not Provided,Other,12,Micro Unitube,SP,,,,Default,Default
+ALCATEL,Not Provided,Other,4,MICROUNITUBE,SP,,,,Default,Default
+ALCATEL,Not Provided,Other,4,MICROUNITUBE,SP,,,,Default,Default
+ALCATEL,Not Provided,Other,6,MICROUNITUBE,SP,,,,Default,Default
+ALCATEL,Not Provided,Other,8,MICROUNITUBE,SP,,,,Default,Default
+ALCATEL,Not Provided,Gel-Free,48,UNITUBE,SP,,,,Default,Default
+ALCATEL,Not Provided,Other,6,LOOSETUBE,TJP,,,,Default,Default
+ALCATEL,Not Provided,Other,12,LOOSETUBE,TJP,,,,Default,Default
+ALCATEL,Not Provided,Other,16,LOOSETUBE,TJP,,,,Default,Default
+ALCATEL,Not Provided,Other,18,LOOSETUBE,TJP,,,,Default,Default
+ALCATEL,Not Provided,Other,24,LOOSETUBE,TJP,,,,Default,Default
+ALCATEL,Not Provided,Other,24,LOOSETUBE,TJP,,,,Default,Default
+ALCATEL,Not Provided,Other,36,LOOSETUBE,TJP,,,,Default,Default
+ALCATEL,Not Provided,Other,48,LOOSETUBE,TJP,,,,Default,Default
+ALCATEL,Not Provided,Other,72,LOOSETUBE,TJP,,,,Default,Default
+ALCATEL,Not Provided,Other,84,LOOSETUBE,TJP,,,,Default,Default
+ALCATEL,Not Provided,Other,96,LOOSETUBE,TJP,,,,Default,Default
+ALCATEL,Not Provided,Other,168,LOOSETUBE,Unknown,,,,Default,Default
+CORNING,Not Provided,Other,12,Central Tube,Unknown,,,,Default,Default
+SIECOR,Not Provided,Other,4,Loose Tube,Unknown,,,,Default,Default
+SIECOR,Not Provided,Other,6,Loose Tube,Unknown,,,,Default,Default
+SIECOR,Not Provided,Other,12,Loose Tube,Unknown,,,,Default,Default
+CORNING,Not Provided,Other,1,Pigtail,Unknown,,,,Default,Default
+CORNING,Not Provided,Other,1,Pigtail,Unknown,,,,Default,Default
+CORNING,Not Provided,Other,1,Pigtail,Unknown,,,,Default,Default
+CORNING,Not Provided,Other,1,Pigtail,Unknown,,,,Default,Default
+CORNING,Not Provided,Other,1,Pigtail,Unknown,,,,Default,Default
