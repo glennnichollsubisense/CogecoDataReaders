@@ -17,7 +17,8 @@ ON_NODE_NO_OF_FIELDS=107
 CABLE_IDENTIFIER='39;FO_CABLE'
 CABLE_NO_OF_FIELDS=52
 
-BASE_DATA_FOLDER='C:/Users/Glenn Nicholls/Documents/GitHub/testingangua/data'
+# BASE_DATA_FOLDER='C:/Users/Glenn Nicholls/Documents/GitHub/testingangua/data'
+BASE_DATA_FOLDER='D:/Documents and Settings/501906310/My Documents/GitHub/CogecoDataReaders/data'
 
 class CogecoReader():
 
@@ -52,7 +53,7 @@ class CogecoReader():
 
             pCollection.append(litem)
 
-        return pCollection  
+        return pCollection
 
 
     def findCABLES(self):
@@ -112,7 +113,6 @@ class CogecoReader():
         for ispec in pFOSCSpecs:
             print (ispec)
         
-
     def findNodeSpecs(self, pProvince):
         if pProvince=='ON':
             return self.findONNodeSpecs()
@@ -186,7 +186,7 @@ class CogecoReader():
             lnbtraysincluded=self.parseEntryWithOneSemiColon(ifosc[11])
             lmanufacturer=self.parseEntryWithOneSemiColon(ifosc[5])
             lspecs.append (',' + lmodelstr + ',,,,' + lmaxtrays + ',' + lnbtraysincluded + ',,,' + lmanufacturer)
-
+        
         return set(lspecs)
         
         
