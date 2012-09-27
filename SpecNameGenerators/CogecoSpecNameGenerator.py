@@ -19,13 +19,13 @@ class CogecoSpecNameGenerator():
         lsheet = self.s_workbook.sheet_by_index(0)
         if pType=='sheath':
             for irow in range (1, 287):
-                lmanu = lsheet.cell_value(irow, 0)
-                ltype = lsheet.cell_value(irow, 2)
-                lqty  = lsheet.cell_value(irow, 3)
-                larmor= lsheet.cell_value(irow, 5)
-                ldiameter= lsheet.cell_value(irow, 6)
+                lmanu = repr(lsheet.cell_value(irow, 0))
+                ltype = repr(lsheet.cell_value(irow, 2))
+                lqty  = repr(int(lsheet.cell_value(irow, 3)))
+                larmor= repr(lsheet.cell_value(irow, 5))
+                ldiameter= repr(lsheet.cell_value(irow, 6))
 
-                lname = lmanu + '/' + ltype + '/' + lqty + '/' + larmor + '/' + ldiameter
+                lname = lmanu + '/' + lqty + 'F' + '/' + ltype + '/'  + larmor
                 print (lname)
         
 
@@ -33,6 +33,6 @@ class CogecoSpecNameGenerator():
 if __name__== "__main__":
 
     print ('######### CogecoSpecNameGenerator')
-    lSpecNameGenerator = CogecoSpecNameGenerator('sheath_specs_v1pt0.xlsx')
+    lSpecNameGenerator = CogecoSpecNameGenerator('sheath_specs_v1pt0.xls')
     lSpecNameGenerator.generateSpecNamesForType ('sheath')
 
