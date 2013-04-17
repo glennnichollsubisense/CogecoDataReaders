@@ -1,8 +1,8 @@
 
-import CogecoFieldManager
-import CogecoUnitTestGenerator
-import CogecoField
-import CogecoExceptions
+import XLSToSWFieldManager
+import XLSToSWUnitTestGenerator
+import XLSToSWField
+import XLSToSWExceptions
 import MagikCodeWriter
 import xlrd
 import operator
@@ -17,7 +17,7 @@ class CogecoXLSToSW():
     s_base_folder='E:/Data/'
     
      
-    s_fieldmanager=CogecoFieldManager.CogecoFieldManager()
+    s_fieldmanager=XLSToSWFieldManager.XLSToSWFieldManager()
 
     def __init__(self):
         self.s_filename=self.s_base_folder + '20121220 CCAD datamodel for conversion v17.xls'
@@ -42,7 +42,7 @@ class CogecoXLSToSW():
     def buildSWField (self, pSheet, pRow):
         lUsed = pSheet.cell_value(pRow,9)
         if operator.or_(lUsed.lower()=='no', lUsed.lower()=='no-temporary'):
-            raise CogecoExceptions.FieldNotMapped(repr(pSheet) + ':' + repr(pRow))
+            raise XLSToSWExceptions.FieldNotMapped(repr(pSheet) + ':' + repr(pRow))
 
         lFieldDefaultValue=''
         lClassName = pSheet.cell_value(pRow,10)
@@ -58,7 +58,7 @@ class CogecoXLSToSW():
         if operator.and_(lFeaturePoint!="", self.s_show_features_p==True):
             print ("----------Feature " + lFeaturePoint)
 
-        lField = CogecoField.CogecoField(lClassName, lFieldName, lFieldType)
+        lField = XLSToSWField.XLSToSWField(lClassName, lFieldName, lFieldType)
         lField.s_field_external_name = lFieldExternalName
         if lFieldLength!='':
             lField.s_field_length = lFieldLength
@@ -82,7 +82,7 @@ class CogecoXLSToSW():
         return self.s_fieldmanager
 
     def resetFieldManager(self):
-        self.s_fieldmanager=CogecoFieldManager.CogecoFieldManager()
+        self.s_fieldmanager=XLSToSWFieldManager.XLSToSWFieldManager()
 
     def parseDynamicEnumeratorsSheet(self, pSheetNumber):
         lsheet = self.s_workbook.sheet_by_index(pSheetNumber)
@@ -148,7 +148,7 @@ class CogecoXLSToSW():
     def parseSheet(self, pSheetNumber=0):
 
         if self.sheetIsACoaxSheet(pSheetNumber):
-            raise CogecoExceptions.SheetIsCoax(pSheetNumber)
+            raise XLSToSWExceptions.SheetIsCoax(pSheetNumber)
             
         lsheet = self.s_workbook.sheet_by_index(pSheetNumber)
         # try:
@@ -157,10 +157,10 @@ class CogecoXLSToSW():
                 lField=self.buildSWField (lsheet, iRow)
                 self.s_fieldmanager.addField(lField)
                 
-            except CogecoExceptions.FieldNotMapped:
+            except XLSToSWExceptions.FieldNotMapped:
                     #print ('field not mapped went off')
                     lblankcode =0
-            except CogecoExceptions.InvalidDSType:
+            except XLSToSWExceptions.InvalidDSType:
                     print ('Invalid ds type in sheet ' + lsheet.name + ' line ' + repr (iRow))
                     lField.showMe()
             
@@ -236,7 +236,7 @@ class CogecoXLSToSW():
         lCallingText = self.s_magikcodewriter.writeCaseObjectHeader(pClassName, pFD, pX, pY)
         lFields = self.fieldManager().findFieldsForClass(pClassName)
         if (len(lFields)==0):
-            raise CogecoExceptions.ClassNotManaged (pClassName)
+            raise XLSToSWExceptions.ClassNotManaged (pClassName)
     
         for iField in lFields:
             self.writeCaseField(pClassName, iField, pFD)
@@ -265,7 +265,7 @@ class CogecoXLSToSW():
                 lsheet = self.s_workbook.sheet_by_index(iSheetNumber)
                 print ('sheet ' + repr(lsheet.name))
                 self.parseSheet(iSheetNumber)
-            except CogecoExceptions.SheetIsCoax:
+            except XLSToSWExceptions.SheetIsCoax:
                 lblankcode = 0  # print ('sheet is a coax sheet' + repr(iSheetNumber))
 
 
@@ -309,7 +309,7 @@ class CogecoXLSToSW():
             lFD.write ("_endif\n")        
             self.s_magikcodewriter.writeEndProcandDollar(lFD)
 
-            ltestgen = CogecoUnitTestGenerator.CogecoUnitTestGenerator(self.fieldManager(), self.s_base_folder)
+            ltestgen = XLSToSWUnitTestGenerator.XLSToSWUnitTestGenerator(self.fieldManager(), self.s_base_folder)
             ltestgen.writeUnitTests (lExternalNames, pUnitTestNameStem, pDatasetName)
         
         lFD.closed
@@ -335,7 +335,7 @@ class CogecoXLSToSW():
                 self.parseSheet(iSheetNumber)
                
                     
-            except CogecoExceptions.SheetIsCoax:
+            except XLSToSWExceptions.SheetIsCoax:
                 lblankcode = 0  # print ('sheet is a coax sheet' + repr(iSheetNumber))
 
         
@@ -394,7 +394,7 @@ class CogecoXLSToSW():
 
             self.s_magikcodewriter.writeEndProcandDollar(lFD)
 
-            ltestgen = CogecoUnitTestGenerator.CogecoUnitTestGenerator(self.fieldManager(), self.s_base_folder)
+            ltestgen = XLSToSWUnitTestGenerator.XLSToSWUnitTestGenerator(self.fieldManager(), self.s_base_folder)
             ltestgen.writeUnitTests (lExternalNames, "MainModel", 'gis_view')
             
         lFD.closed

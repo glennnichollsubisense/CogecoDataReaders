@@ -1,8 +1,8 @@
-import CogecoExceptions
+import XLSToSWExceptions
 import operator
 
 
-class CogecoField():
+class XLSToSWField():
     
     s_class_name=''
     s_field_name=''

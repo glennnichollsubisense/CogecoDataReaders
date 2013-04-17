@@ -1,9 +1,9 @@
-import CogecoExceptions  ##GNGN need a common one of these
+import XLSToSWExceptions  ##GNGN need a common one of these
 import xlrd
 import operator
 
 
-class CogecoSpecNameGenerator():
+class XLSToSWSpecNameGenerator():
 
     s_filename='not set'
     s_workbook='not set'
@@ -37,6 +37,6 @@ class CogecoSpecNameGenerator():
 if __name__== "__main__":
 
     print ('######### CogecoSpecNameGenerator')
-    lSpecNameGenerator = CogecoSpecNameGenerator('sheath_specs_v1pt0.xls')
+    lSpecNameGenerator = XLSToSWSpecNameGenerator('sheath_specs_v1pt0.xls')
     lSpecNameGenerator.generateSpecNamesForType ('sheath')
 

@@ -1,11 +1,11 @@
 
-import CogecoFieldManager
-import CogecoField
-import CogecoExceptions
+import XLSToSWFieldManager
+import XLSToSWField
+import XLSToSWExceptions
 import xlrd
 import operator
 
-class CogecoUnitTestGenerator():
+class XLSToSWUnitTestGenerator():
 
     s_base_folder='D:/Cogeco/Data'
     s_no_hand_edit="## This file is machine generated.  Dont add any hand-edits\n"
