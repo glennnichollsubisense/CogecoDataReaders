@@ -33,10 +33,14 @@ class CogecoFieldManager():
         for iField in self.s_fields:
             lClassNames.append(iField.className())
         lClassNames.sort()
-        print ('Set of Classnames')
-        print (set(lClassNames))
         return set(lClassNames)
-            
+
+    def showClassesManaged(self):
+        # Prints out the set of classes managed
+        lclassesmanaged=self.classesManaged()
+        print ('Set of Classnames')
+        print (set(lclassesmanaged))
+        
 
     def findField (self, pClassName, pFieldName):
         
@@ -70,9 +74,9 @@ class CogecoFieldManager():
         # Returns true if the field is not in the set
         # Raises a condition (CogecoExceptions.InequalityInFields) if the field is already defined with different parameters
 
-        if p_field.className().find(' ')<>-1:
+        if p_field.className().find(' ')!=-1:
             raise CogecoExceptions.TrailingSpaceInClassName (p_field.className)
-        if p_field.fieldName().find(' ')<>-1:
+        if p_field.fieldName().find(' ')!=-1:
             raise CogecoExceptions.TrailingSpaceInFieldName (p_field.fieldName)
             
 
@@ -90,17 +94,17 @@ class CogecoFieldManager():
             return True
         
         l_field = self.findField (p_field.className(), p_field.fieldName())
-        if p_field.fieldExternalName()<>l_field.fieldExternalName():
+        if p_field.fieldExternalName()!=l_field.fieldExternalName():
             raise CogecoExceptions.InequalityInFields (self.strClashingNames('External Name', p_field, l_field))
-        if p_field.fieldType()<>l_field.fieldType():
+        if p_field.fieldType()!=l_field.fieldType():
             raise CogecoExceptions.InequalityInFields (self.strClashingNames('Type', p_field, l_field))
-        if p_field.fieldLength()<>l_field.fieldLength():
+        if p_field.fieldLength()!=l_field.fieldLength():
             raise CogecoExceptions.InequalityInFields (self.strClashingNames('Length', p_field, l_field))
-        if p_field.fieldUnit()<>l_field.fieldUnit():
+        if p_field.fieldUnit()!=l_field.fieldUnit():
             raise CogecoExceptions.InequalityInFields (self.strClashingNames('Unit', p_field, l_field))
-##        if p_field.fieldComment()<>l_field.fieldComment():
+##        if p_field.fieldComment()!=l_field.fieldComment():
 ##            raise CogecoExceptions.InequalityInFields (self.strClashingNames('Comment', p_field, l_field))
-        if p_field.fieldPriority()<>l_field.fieldPriority():
+        if p_field.fieldPriority()!=l_field.fieldPriority():
             raise CogecoExceptions.InequalityInFields (self.strClashingNames('Priority', p_field, l_field))
 
             
