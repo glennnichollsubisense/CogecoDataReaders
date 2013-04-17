@@ -1,7 +1,9 @@
 
 import CogecoFieldManager
+import CogecoUnitTestGenerator
 import CogecoField
 import CogecoExceptions
+import MagikCodeWriter
 import xlrd
 import operator
 
@@ -11,14 +13,18 @@ class CogecoXLSToSW():
     s_filename='not set'
     s_workbook='not set'
     s_show_features_p=False
+    s_magikcodewriter='not set'
     # s_base_folder='/home/glennx/Dropbox/'
-    s_base_folder='D:/Cogeco/Data/'
+    s_base_folder='E:/Data/'
+    # s_base_folder='C:/Users/Glenn Nicholls/Documents/Cogeco/'
+    
      
     s_fieldmanager=CogecoFieldManager.CogecoFieldManager()
 
     def __init__(self):
-        self.s_filename=self.s_base_folder + 'CCAD datamodel for conversion v9 new.xls'
+        self.s_filename=self.s_base_folder + '20121002 CCAD datamodel for conversion v14.xls'
         self.s_workbook=xlrd.open_workbook(self.s_filename)
+        self.s_magikcodewriter = MagikCodeWriter.MagikCodeWriter()
         
 
     def sheetIsACoaxSheet (self, pSheetNumber):
@@ -51,18 +57,18 @@ class CogecoXLSToSW():
         lFieldText = self.buildSWFieldComment(pSheet, pRow)
 
         lFeaturePoint=pSheet.cell_value(pRow,25)
-        if operator.and_(lFeaturePoint<>"", self.s_show_features_p==True):
+        if operator.and_(lFeaturePoint!="", self.s_show_features_p==True):
             print ("----------Feature " + lFeaturePoint)
 
         lField = CogecoField.CogecoField(lClassName, lFieldName, lFieldType)
         lField.s_field_external_name = lFieldExternalName
-        if lFieldLength<>'':
+        if lFieldLength!='':
             lField.s_field_length = lFieldLength
-        if lFieldPriority<>'':
+        if lFieldPriority!='':
             lField.s_field_priority=lFieldPriority
-        if lFieldText<>'':
+        if lFieldText!='':
             lField.s_field_comment=lFieldText
-        if lFieldDefaultValue<>'':
+        if lFieldDefaultValue!='':
             lField.s_field_default_value=lFieldDefaultValue
         if lField.fieldType().lower() == "join":
             lField.s_field_join_type=pSheet.cell_value(pRow,32)
@@ -76,6 +82,9 @@ class CogecoXLSToSW():
 
     def fieldManager(self):
         return self.s_fieldmanager
+
+    def resetFieldManager(self):
+        self.s_fieldmanager=CogecoFieldManager.CogecoFieldManager()
 
     def parseDynamicEnumeratorsSheet(self, pSheetNumber):
         lsheet = self.s_workbook.sheet_by_index(pSheetNumber)
@@ -96,8 +105,8 @@ class CogecoXLSToSW():
 
 
     def getVersion(self):
-        lsheet = self.s_workbook.sheet_by_index(0)
-        lversion = lsheet.cell_value(0, 2)
+        lsheet = self.s_workbook.sheet_by_index(2)
+        lversion = lsheet.cell_value(0, 1)
         print ("version = " + lversion)
 
         return lversion
@@ -108,7 +117,7 @@ class CogecoXLSToSW():
         lsheet = self.s_workbook.sheet_by_index(pSheetNumber)
         lexternalnames=[]
         try:
-            for iRow in range(3, 32):
+            for iRow in range(3, 38):
                 lInternalName=lsheet.cell_value(iRow, 0)
                 lPNIExternalName=lsheet.cell_value(iRow, 1)
                 lCogecoExternalName=lsheet.cell_value(iRow, 2)
@@ -164,7 +173,7 @@ class CogecoXLSToSW():
             
     def writeCaseCallingLines (self, pCallingTexts, pCogecoOnly, pFD):
         for iCallingText in pCallingTexts:
-            if operator.and_ (pCogecoOnly==True, iCallingText.find("_cogeco")<>-1):
+            if operator.and_ (pCogecoOnly==True, iCallingText.find("_cogeco")!=-1):
                 pFD.write (iCallingText + "(l_make_changes?, p_case_name)\n")
             if operator.and_ (pCogecoOnly==False, iCallingText.find("_cogeco")==-1):
                 pFD.write (iCallingText + "(l_make_changes?, p_case_name)\n")
@@ -188,41 +197,6 @@ class CogecoXLSToSW():
                     	pFD.write ('cogeco_make_enum_use (' + ':' + iField.fieldType() + ',' + ':' + iField.className() + ',' + ':' + iField.fieldName() + ',p_make_changes?)\n')
         pFD.write ("gis_program_manager.cached_dataset(:dynamic_enumerator).commit()\n")            	
         pFD.write ("_endproc\n")
-
-
-    def writeCaseObjectHeader (self, pClassName, pFD):
-        lMethodName="cogeco_update_" + pClassName
-        pFD.write ("_global " + lMethodName + "<<\n")
-        pFD.write ("_proc ( _optional p_make_changes?, p_case_name)\n")
-        pFD.write ("_local l_case_name << p_case_name.default(cogeco_get_default_case_name())\n")
-        pFD.write ("_local  l_make_changes? << p_make_changes?.default(_false)\n")
-        pFD.write ("_local o, an_f, a_pred\n")
-        pFD.write ("_local gpm << gis_program_manager\n")
-        pFD.write ("_local cv  << gpm.cached_dataset(l_case_name)\n")
-        pFD.write ("_if cv.object_map _is _unset _then cv.object_map << hash_table.new() _endif\n")
-        pFD.write ("_if cv.object_offset _is _unset _then cv.object_offset<< coordinate.new(0,0) _endif\n")
-        pFD.write ("_dynamic !current_dsview! << cv\n")
-        pFD.write ("_dynamic !current_world! << cv.world\n")
-        pFD.write ("a_pred << predicate.eq (:name, :" + pClassName + ")\n")
-        pFD.write ("o << cv.collections[:sw_gis!case_object].select(a_pred).an_element()\n")
-        pFD.write ("_if o _is _unset _then\n")
-        pFD.write ("l_info_string << 'made " + pClassName + "'\n")
-        pFD.write ("_if l_make_changes? _is _true _then\n")
-        pFD.write ("o << case_object.new_from_archive(\n")
-        pFD.write ("{47234,\n")
-        pFD.write ('"' + pClassName + '",\n')
-        pFD.write ("write_string('" + pClassName + "'),\n")
-        pFD.write ("'" + pClassName + "',\n")
-        pFD.write (" _unset,{0,0,0},0} ,12000.0000000, 12000.0000000)\n")
-        pFD.write ("o.set_trigger(:insert,'insert_trigger()')\n")
-        pFD.write ("o.set_trigger(:insert,'update_trigger()')\n")
-        pFD.write ("o.set_trigger(:insert,'delete_trigger()')\n")
-        pFD.write ("_else\n")
-        pFD.write ("l_info_string << ''.concatenation ('!! NOT WRITING:: ', l_info_string)\n")
-        pFD.write ("_endif\n")
-        pFD.write ("write (l_info_string)\n")
-        pFD.write ("_endif\n")
-        return lMethodName
 
 
     def writeCaseField (self, pClassName, pField, pFD):
@@ -249,19 +223,19 @@ class CogecoXLSToSW():
             pFD.write ("cogeco_make_geometry_field(o, :" + pField.fieldName() + ", " + '"' + pField.fieldExternalName() + '"' + ", :" + pField.fieldType() + ", l_make_changes?, " + "(" + repr(pField.fieldPriority()) + ")" + ".floor" + ")\n")
             return
 
-        if pField.fieldDefaultValue<>'':   
-            pFD.write ('cogeco_make_enum_field (o, ' + ':' + pField.fieldName() + ',' + ':' + pField.className() + ',' + ':' + pField.fieldType() + ',' + 'l_make_changes?' + ',' + '"' + pField.fieldDefaultValue() + '"' + ')\n')
+        if pField.fieldDefaultValue!='':   
+            pFD.write ('cogeco_make_enum_field (o, ' + ':' + pField.fieldName() + ',' + '"' + pField.fieldExternalName() + '"' + ',' + ':' + pField.fieldType() + ',' + 'l_make_changes?' + ',' + '"' + pField.fieldDefaultValue() + '"' + ')\n')
         else:
-            pFD.write ('cogeco_make_enum_field (o, ' + ':' + pField.fieldName() + ',' + ':' + pField.className() + ',' + ':' + pField.fieldType() + ',' + 'l_make_changes?)\n')
+            pFD.write ('cogeco_make_enum_field (o, ' + ':' + pField.fieldName() + ',' + '"' + pField.fieldExternalName() + '"' + ',' + ':' + pField.fieldType() + ',' + 'l_make_changes?)\n')
 
 
     def writeCaseObjectTail (self, pFD):
         pFD.write ("_endproc\n")
         pFD.write ("$\n")
 
-    def writeCaseDefinition (self, pClassName, pFD):
+    def writeCaseDefinition (self, pClassName, pFD, pX=12000, pY=12000):
 
-        lCallingText = self.writeCaseObjectHeader(pClassName, pFD)
+        lCallingText = self.s_magikcodewriter.writeCaseObjectHeader(pClassName, pFD, pX, pY)
         lFields = self.fieldManager().findFieldsForClass(pClassName)
         if (len(lFields)==0):
             raise CogecoExceptions.ClassNotManaged (pClassName)
@@ -275,143 +249,169 @@ class CogecoXLSToSW():
 
     def writeObjectSelectLine(self, pObjectName, pFD):
         pFD.write ("lSelectCaseObject(" + "'" + pObjectName + "'" + "," + "l_case_name"+ ")\n")
+            
+            
+    def processLandbaseWorkBook (self, pSrcFileName, pTargetFileName, pUnitTestNameStem, pDatasetName, pOriginX=2000, pOriginY=2000, pUpperTabNo=10):
+
+        loriginX=pOriginX
+        loriginY=pOriginY
+        
+        self.s_filename=self.s_base_folder + pSrcFileName
+        self.s_workbook=xlrd.open_workbook(self.s_filename)
+
+        lExternalNames = self.parseExternalNamesSheet(1)
+        lVersion = self.getVersion()
+         
+        for iSheetNumber in range (2,pUpperTabNo):
+            try:
+                lsheet = self.s_workbook.sheet_by_index(iSheetNumber)
+                print ('sheet ' + repr(lsheet.name))
+                self.parseSheet(iSheetNumber)
+            except CogecoExceptions.SheetIsCoax:
+                lblankcode = 0  # print ('sheet is a coax sheet' + repr(iSheetNumber))
 
 
+        lClassesManaged=self.fieldManager().classesManaged()
+        self.fieldManager().showClassesManaged()
+        lCallingLines=[]
+        
+        with open(self.s_base_folder + pTargetFileName, 'w') as lFD:
+
+            lFD.write ("# Cogeco Case Upgrade for " + lVersion + "\n")
+            
+            self.writeCasePreamble(lFD)
+            
+            for iClass in lClassesManaged:
+                lCallingLines.append(self.writeCaseDefinition(iClass, lFD, loriginX, loriginY))
+                loriginX=loriginX+2500
+                loriginY=loriginY+4500
+
+            self.s_magikcodewriter.writeMakeJoinsMagikCodePreamble(lFD)            
+            for iJoinField in self.fieldManager().joinFields():
+                lFD.write ('make_a_join (p_case_view, ' + '"' + iJoinField.s_field_join_type + '"' + ',' + ':' + iJoinField.className() + ',' + ':' + iJoinField.s_field_join_to + ', p_make_changes?)\n')
+            self.s_magikcodewriter.writeEndProcandDollar(lFD)
+
+            self.s_magikcodewriter.writeMakeCaseSelectMagikCodePreamble(lFD)
+            for iClass in lClassesManaged:
+                self.writeObjectSelectLine(iClass, lFD)
+            self.s_magikcodewriter.writeEndProcandDollar(lFD)
+
+            self.s_magikcodewriter.writeCaseUpgradeMagikCodePreamble(lFD)
+
+            if pUnitTestNameStem == 'CCAD_landbase':
+                lFD.write ('gMakeLandbaseEnumerators()\n')
+                
+            self.writeCaseCallingLines(lCallingLines, False, lFD)
+            lFD.write ("_if l_make_changes? _is _true\n")
+            lFD.write ("_then\n")
+            self.writeCaseCallingLines(lCallingLines, True, lFD)
+            lFD.write ("cogeco_make_joins(l_case_view, l_make_changes?)\n")
+            for iextname in lExternalNames:
+                lFD.write ("change_external_name(" + ":" + iextname[0] + "," + "'" + iextname[1] + "'" + "," + "'" + iextname[2] + "'" + "," + "l_case_view" + "," + "l_make_changes?" + ")\n")
+            lFD.write ("_endif\n")        
+            self.s_magikcodewriter.writeEndProcandDollar(lFD)
+
+            ltestgen = CogecoUnitTestGenerator.CogecoUnitTestGenerator(self.fieldManager(), self.s_base_folder)
+            ltestgen.writeUnitTests (lExternalNames, pUnitTestNameStem, pDatasetName)
+        
+        lFD.closed
+    
+        
+        
+
+    def processMainDBWorkBook (self, pFileName):
+
+        self.s_filename=self.s_base_folder + pFileName
+        self.s_workbook=xlrd.open_workbook(self.s_filename)
+        
+        lEnumerators = []
+    
+        lEnumerators = self.parseDynamicEnumeratorsSheet(4)
+        lExternalNames = self.parseExternalNamesSheet(5)
+        lVersion = self.getVersion()
+        
+        for iSheetNumber in range (7,128):
+            try:
+                lsheet = self.s_workbook.sheet_by_index(iSheetNumber)
+                print ('sheet ' + repr(lsheet.name))
+                self.parseSheet(iSheetNumber)
+               
+                    
+            except CogecoExceptions.SheetIsCoax:
+                lblankcode = 0  # print ('sheet is a coax sheet' + repr(iSheetNumber))
+
+        
+
+        lClassesManaged=self.fieldManager().classesManaged()
+        self.fieldManager().showClassesManaged()
+
+        lCallingLines=[]
+        
+        with open(self.s_base_folder + 'case_upgrade.magik', 'w') as lFD:
+
+            lFD.write ("# Cogeco Case Upgrade for " + lVersion + "\n")
+            
+            self.writeCasePreamble(lFD)
+            self.writeManualUpdatesToEnums(lFD)
+
+            self.writeEnumUsages(lFD)
+            
+            for iClass in lClassesManaged:
+                lCallingLines.append(self.writeCaseDefinition(iClass, lFD))
+
+            self.s_magikcodewriter.writeMakeJoinsMagikCodePreamble(lFD)
+            
+            for iJoinField in self.fieldManager().joinFields():
+                lFD.write ('make_a_join (p_case_view, ' + '"' + iJoinField.s_field_join_type + '"' + ',' + ':' + iJoinField.className() + ',' + ':' + iJoinField.s_field_join_to + ', p_make_changes?)\n')
+
+            self.s_magikcodewriter.writeEndProcandDollar(lFD)
+   
+            self.s_magikcodewriter.writeMakeCaseSelectMagikCodePreamble(lFD)
+                
+            for iClass in lClassesManaged:
+                self.writeObjectSelectLine(iClass, lFD)
+                
+            lFD.write ("lSelectCaseObject(" + "'" + "mit_cable" + "'" + "," + "l_case_name"+ ")\n")            
+            self.s_magikcodewriter.writeEndProcandDollar(lFD)
+
+            self.s_magikcodewriter.writeCaseUpgradeMagikCodePreamble(lFD)
+        
+            for iEnum in lEnumerators:
+                self.writeEnumCallingLine(iEnum, lFD)
+
+            
+            lFD.write ("cogeco_make_enum_usages(l_make_changes?)\n")
+            
+            self.writeCaseCallingLines(lCallingLines, False, lFD)
+            lFD.write ("_if l_make_changes? _is _true\n")
+            lFD.write ("_then\n")
+            self.writeCaseCallingLines(lCallingLines, True, lFD)
+          
+            
+            lFD.write ("cogeco_make_joins(l_case_view, l_make_changes?)\n")
+            lFD.write ("cogeco_miscellaneous_changes(l_case_view, l_make_changes?)\n")
+            for iextname in lExternalNames:
+                lFD.write ("change_external_name(" + ":" + iextname[0] + "," + "'" + iextname[1] + "'" + "," + "'" + iextname[2] + "'" + "," + "l_case_view" + "," + "l_make_changes?" + ")\n")
+            lFD.write ("_endif\n")        
+
+            self.s_magikcodewriter.writeEndProcandDollar(lFD)
+
+            ltestgen = CogecoUnitTestGenerator.CogecoUnitTestGenerator(self.fieldManager(), self.s_base_folder)
+            ltestgen.writeUnitTests (lExternalNames, "MainModel", 'gis_view')
+            
+        lFD.closed
+
+        
 
 if __name__== "__main__":
 
-    print ('######### CogecoXLSToSW')
     lXLSToSW = CogecoXLSToSW()
-    lEnumerators = []
-    
-    lEnumerators = lXLSToSW.parseDynamicEnumeratorsSheet(2)
-    lExternalNames = lXLSToSW.parseExternalNamesSheet(3)
-    lVersion = lXLSToSW.getVersion()
-    
-    for iSheetNumber in range (4,122):
-        try:
-            lsheet = lXLSToSW.s_workbook.sheet_by_index(iSheetNumber)
-            print ('sheet ' + repr(lsheet.name))
-            lXLSToSW.parseSheet(iSheetNumber)
-           
-                
-        except CogecoExceptions.SheetIsCoax:
-            lblankcode = 0  # print ('sheet is a coax sheet' + repr(iSheetNumber))
 
-    
+    lXLSToSW.resetFieldManager()
+    lXLSToSW.processMainDBWorkBook ('20121123 CCAD datamodel for conversion v17.xls')
 
-    lClassesManaged=lXLSToSW.fieldManager().classesManaged()
-    lCallingLines=[]
-    
-    with open(lXLSToSW.s_base_folder + 'case_upgrade.magik', 'w') as lFD:
-        lXLSToSW.writeCasePreamble(lFD)
-        lXLSToSW.writeManualUpdatesToEnums(lFD)
+    lXLSToSW.resetFieldManager()
+    lXLSToSW.processLandbaseWorkBook ('20121123 Cogeco CCAD and CGO Landbase v17.xls', 'case_upgrade_cad_and_cgo_landbase.magik', 'CCAD_landbase', 'ccad_landbase_view', 2000, 2000, 20)
 
-        lXLSToSW.writeEnumUsages(lFD)
-        
-        for iClass in lClassesManaged:
-            lCallingLines.append(lXLSToSW.writeCaseDefinition(iClass, lFD))
-
-        lFD.write ("_global cogeco_make_joins<<\n")
-        lFD.write ("_proc (p_case_view, p_make_changes?)\n")
-        lFD.write("_local make_a_join<<\n")
-        lFD.write("_proc (pCaseView, pType, pParentTable, pChildTable, pMakeChanges?)\n")
-        lFD.write("\n")
-        lFD.write("_local lInfoString<<''\n")
-        lFD.write("_local a_pred << predicate.eq (:name, pParentTable)\n")
-        lFD.write("_local o << pCaseView.collections[:sw_gis!case_object].select(a_pred).an_element()\n")
-        lFD.write("_if o _is _unset\n")
-        lFD.write("_then\n")
-        lFD.write("lInfoString<< 'tried to make a join to an unknown table ' + pParentTable\n")
-        lFD.write("_else\n")
-        lFD.write("_if o.get_field (pChildTable) _is _unset\n")
-        lFD.write("_then\n")
-        lFD.write("lInfoString<< 'made a join ' + pType + '.' + pParentTable + '.' + pChildTable\n")
-        lFD.write("_if pMakeChanges?\n")
-        lFD.write("_then\n")
-        lFD.write("pCaseView.create_relationship (pType, pParentTable, pChildTable)\n")
-        lFD.write("_else\n")
-        lFD.write("lInfoString<< ''.concatenation ('!! NOT WRITING:: ', lInfoString)\n")
-        lFD.write("_endif\n")
-        lFD.write("_endif\n")
-        lFD.write("_endif\n")
-        lFD.write("write (lInfoString)\n")
-        lFD.write("_endproc\n")
-        
-        for iJoinField in lXLSToSW.fieldManager().joinFields():
-            lFD.write ('make_a_join (p_case_view, ' + '"' + iJoinField.s_field_join_type + '"' + ',' + ':' + iJoinField.className() + ',' + ':' + iJoinField.s_field_join_to + ', p_make_changes?)\n')
-        lFD.write ("_endproc\n")
-        lFD.write ("$\n")
-
-        lFD.write ("_global cogeco_case_select<<\n")
-        lFD.write ("_proc(_optional p_case_name)\n")
-        lFD.write ("_local l_case_name << p_case_name.default(cogeco_get_default_case_name())\n")
-
-
-        lFD.write("_local lSelectCaseObject << _proc(pObjectName, pCaseName)\n")
-        lFD.write("_local gpm << gis_program_manager\n")
-        lFD.write("\n")
-        lFD.write("_local lCaseApplication\n")
-        lFD.write("_for i _over smallworld_product.applications.fast_elements() \n")
-        lFD.write("_loop\n")
-        lFD.write("_if i.soc_name _is pCaseName\n")
-        lFD.write("_then\n")
-        lFD.write("lCaseApplication << i\n")
-        lFD.write("_endif\n")
-        lFD.write("_endloop\n")
-        lFD.write("_local lPlugin << lCaseApplication.plugin(:maps)\n")
-        lFD.write("_local l_map << lPlugin.current_map_document_gui.map_manager.current_map\n")
-        lFD.write("\n")
-        lFD.write("_local v_c << gpm.cached_dataset (pCaseName)\n")
-        lFD.write("_local a_pred << predicate.eq (:name, pObjectName)\n")
-        lFD.write("_local a_cobj << v_c.collections[:sw_gis!case_object].select(a_pred).an_element()\n")
-        lFD.write("\n")
-        lFD.write("_if a_cobj _is _unset _orif\n")
-        lFD.write("a_cobj.position _is _unset _orif\n")
-        lFD.write("a_cobj.outline _is _unset\n")
-        lFD.write("_then\n")
-        lFD.write("condition.raise (:user_error, :string, pObjectName + ' object not available for selection ')\n")
-        lFD.write("_endif \n")
-        lFD.write("\n")
-        lFD.write("write ('adding ', a_cobj.name, ' to the selection' )\n")
-        lFD.write("l_map.add_geometry_to_selection(geometry_set.new_with(a_cobj.position))\n")
-        lFD.write("l_map.add_geometry_to_selection(geometry_set.new_with(a_cobj.outline))\n")
-        lFD.write("_endproc \n")            
-
-
-            
-        for iClass in lClassesManaged:
-            lXLSToSW.writeObjectSelectLine(iClass, lFD)        
-            
-        lFD.write ("_endproc\n")
-        lFD.write ("$\n")
-
-        lFD.write ("_global cogeco_make_case_upgrade<<\n")
-        lFD.write ("_proc(_optional p_make_changes?, p_case_name)\n")
-        lFD.write ("_local l_make_changes?<< p_make_changes?.default(_false)\n")
-        lFD.write ("_local l_case_view<< gis_program_manager.cached_dataset(p_case_name.default(cogeco_get_default_case_name()))\n")
-    
-        for iEnum in lEnumerators:
-            lXLSToSW.writeEnumCallingLine(iEnum, lFD)
-
-        
-        lFD.write ("cogeco_make_enum_usages(l_make_changes?)\n")
-        
-        lXLSToSW.writeCaseCallingLines(lCallingLines, False, lFD)
-        lFD.write ("_if l_make_changes? _is _true\n")
-        lFD.write ("_then\n")
-        lXLSToSW.writeCaseCallingLines(lCallingLines, True, lFD)
-      
-        
-        lFD.write ("cogeco_make_joins(l_case_view, l_make_changes?)\n")
-        lFD.write ("cogeco_miscellaneous_changes(l_case_view, l_make_changes?)\n")
-        for iextname in lExternalNames:
-            lFD.write ("change_external_name(" + ":" + iextname[0] + "," + "'" + iextname[1] + "'" + "," + "'" + iextname[2] + "'" + "," + "l_case_view" + "," + "l_make_changes?" + ")\n")
-        lFD.write ("_endif\n")        
-
-        lFD.write ("_endproc\n")
-        lFD.write ("$\n")
-    
-    lFD.closed
-
-        
+    lXLSToSW.resetFieldManager()
+    lXLSToSW.processLandbaseWorkBook ('20121123 Cogeco Govt Landbase v17.xls', 'case_upgrade_gov_landbase.magik', 'Govt_landbase', 'govt_landbase_view', 1000, 1000, 10)
