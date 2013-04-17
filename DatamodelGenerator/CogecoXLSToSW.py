@@ -14,15 +14,13 @@ class CogecoXLSToSW():
     s_workbook='not set'
     s_show_features_p=False
     s_magikcodewriter='not set'
-    # s_base_folder='/home/glennx/Dropbox/'
     s_base_folder='E:/Data/'
-    # s_base_folder='C:/Users/Glenn Nicholls/Documents/Cogeco/'
     
      
     s_fieldmanager=CogecoFieldManager.CogecoFieldManager()
 
     def __init__(self):
-        self.s_filename=self.s_base_folder + '20121002 CCAD datamodel for conversion v14.xls'
+        self.s_filename=self.s_base_folder + '20121220 CCAD datamodel for conversion v17.xls'
         self.s_workbook=xlrd.open_workbook(self.s_filename)
         self.s_magikcodewriter = MagikCodeWriter.MagikCodeWriter()
         
@@ -408,10 +406,10 @@ if __name__== "__main__":
     lXLSToSW = CogecoXLSToSW()
 
     lXLSToSW.resetFieldManager()
-    lXLSToSW.processMainDBWorkBook ('20121123 CCAD datamodel for conversion v17.xls')
+    lXLSToSW.processMainDBWorkBook ('20121220 CCAD datamodel for conversion v17.xls')
 
     lXLSToSW.resetFieldManager()
-    lXLSToSW.processLandbaseWorkBook ('20121123 Cogeco CCAD and CGO Landbase v17.xls', 'case_upgrade_cad_and_cgo_landbase.magik', 'CCAD_landbase', 'ccad_landbase_view', 2000, 2000, 20)
+    lXLSToSW.processLandbaseWorkBook ('20121220 Cogeco CCAD and CGO Landbase v17.xls', 'case_upgrade_cad_and_cgo_landbase.magik', 'CCAD_landbase', 'ccad_landbase_view', 2000, 2000, 20)
 
     lXLSToSW.resetFieldManager()
-    lXLSToSW.processLandbaseWorkBook ('20121123 Cogeco Govt Landbase v17.xls', 'case_upgrade_gov_landbase.magik', 'Govt_landbase', 'govt_landbase_view', 1000, 1000, 10)
+    lXLSToSW.processLandbaseWorkBook ('20121220 Cogeco Govt Landbase v17.xls', 'case_upgrade_gov_landbase.magik', 'Govt_landbase', 'govt_landbase_view', 1000, 1000, 10)
