@@ -48,7 +48,6 @@ class SovernetXLSToSW():
         lFieldExternalName = pSheet.cell_value(pRow,26)
         lFieldType = pSheet.cell_value(pRow,13)
         lFieldDefaultValue = pSheet.cell_value(pRow, 12)
-
         lFieldLength = pSheet.cell_value(pRow,14)
         # lFieldPriority = pSheet.cell_value(pRow,28)
         lFieldPriority = 10
