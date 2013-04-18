@@ -23,9 +23,9 @@ class XLSToSWField():
     def __init__(self, pclassname='', pfieldname='', pfieldtype=''):
         
         if pclassname.find(' ')!=-1:
-            raise CogecoExceptions.TrailingSpaceInClassName (pclassname)
+            raise XLSToSWExceptions.TrailingSpaceInClassName (pclassname)
         if pfieldname.find(' ')!=-1:
-            raise CogecoExceptions.TrailingSpaceInFieldName (pfieldname)
+            raise XLSToSWExceptions.TrailingSpaceInFieldName (pfieldname)
             
         self.s_class_name=pclassname
         self.s_field_name=pfieldname
@@ -113,7 +113,7 @@ class XLSToSWField():
             
 
     def isEnumField(self):
-        if self.fieldType().lower().find('cogeco')!=-1:
+        if self.fieldType().lower().find('sov_')!=-1:
             return True
         return False
 
@@ -160,7 +160,7 @@ class XLSToSWField():
             return repr(lLength) + '.floor'
 
     def isPNIField(self):
-        if operator.and_(self.className().find('cogeco')==-1, self.fieldName().find('cogeco')==-1):
+        if operator.and_(self.className().find('sovernet')==-1, self.fieldName().find('sovernet')==-1):
             return True
 
         return False
@@ -176,14 +176,14 @@ class XLSToSWField():
 
 
 if __name__ == "__main__":
-    l_cfield = CogecoField()
+    l_cfield = XLSToSWField()
 
     print ("Test1:" + repr(l_cfield.s_class_name == ''))
     print ("Test2:" + repr(l_cfield.s_field_name == ''))
     print ("Test3:" + repr(l_cfield.s_field_length == 0))
     print ("Test4:" + repr(l_cfield.s_field_priority == 99))
 
-    lCfield2 = CogecoField ('slartey', 'bartfarst')
+    lCfield2 = XLSToSWField ('slartey', 'bartfarst')
     print ("Test5:" + repr(lCfield2.s_class_name == 'slartey'))
     print ("Test6:" + repr(lCfield2.s_field_name == 'bartfarst'))
     lCfield2.showMe()

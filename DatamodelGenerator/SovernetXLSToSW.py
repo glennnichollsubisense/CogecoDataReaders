@@ -8,13 +8,13 @@ import xlrd
 import operator
 
 
-class CogecoXLSToSW():
+class SovernetXLSToSW():
 
     s_filename='not set'
     s_workbook='not set'
-    s_show_features_p=False
+    s_show_features_p=True
     s_magikcodewriter='not set'
-    s_base_folder='E:/Data/'
+    s_base_folder='/home/glennx/Dropbox/Sovernet/'
     
      
     s_fieldmanager=XLSToSWFieldManager.XLSToSWFieldManager()
@@ -47,9 +47,10 @@ class CogecoXLSToSW():
         lFieldName = pSheet.cell_value(pRow, 11)
         lFieldExternalName = pSheet.cell_value(pRow,26)
         lFieldType = pSheet.cell_value(pRow,13)
-        lFieldDefaultValue = pSheet.cell_value(pRow, 12)            
+        lFieldDefaultValue = pSheet.cell_value(pRow, 12)
         lFieldLength = pSheet.cell_value(pRow,14)
-        lFieldPriority = pSheet.cell_value(pRow,28)
+        # lFieldPriority = pSheet.cell_value(pRow,28)
+        lFieldPriority = 10
         lFieldText = self.buildSWFieldComment(pSheet, pRow)
 
         lFeaturePoint=pSheet.cell_value(pRow,25)
@@ -71,7 +72,6 @@ class CogecoXLSToSW():
             lField.s_field_join_to  =pSheet.cell_value(pRow,31)
             if lField.isValidJoin()==False:
                 print ("found an invalid join ")
-                lField.showMe()
             
         # lField.showMe()
         return lField
@@ -114,8 +114,8 @@ class CogecoXLSToSW():
             for iRow in range(3, 38):
                 lInternalName=lsheet.cell_value(iRow, 0)
                 lPNIExternalName=lsheet.cell_value(iRow, 1)
-                lCogecoExternalName=lsheet.cell_value(iRow, 2)
-                lexternalnames.append ([lInternalName, lPNIExternalName, lCogecoExternalName])
+                lCustomExternalName=lsheet.cell_value(iRow, 2)
+                lexternalnames.append ([lInternalName, lPNIExternalName, lCustomExternalName])
 
                 
 
@@ -137,7 +137,7 @@ class CogecoXLSToSW():
             lCtr=+1
 
         lEnumValuesStr+='}'
-        if pEnum[0].find('cogeco_')==-1:
+        if pEnum[0].find('sov')==-1:
             pFD.write('#')
         pFD.write ("cogeco_upgrade_enums(l_make_changes?, p_case_name, " + '"' + pEnum[0] + '"' + ',' + lEnumValuesStr + ',' + '"' + pEnum[2] + '"' + ")\n")
         
@@ -154,7 +154,7 @@ class CogecoXLSToSW():
                 self.s_fieldmanager.addField(lField)
                 
             except XLSToSWExceptions.FieldNotMapped:
-                    #print ('field not mapped went off')
+                    # print ('field not mapped went off')
                     lblankcode =0
             except XLSToSWExceptions.InvalidDSType:
                     print ('Invalid ds type in sheet ' + lsheet.name + ' line ' + repr (iRow))
@@ -165,11 +165,12 @@ class CogecoXLSToSW():
                 # print ('indexerror went off')
                 lblankcode= 0
             
-    def writeCaseCallingLines (self, pCallingTexts, pCogecoOnly, pFD):
+    def writeCaseCallingLines (self, pCallingTexts, pCustomOnly, pFD):
         for iCallingText in pCallingTexts:
-            if operator.and_ (pCogecoOnly==True, iCallingText.find("_cogeco")!=-1):
+            print ("case calling " + iCallingText)
+            if operator.and_ (pCustomOnly==True, iCallingText.find("_cogeco")!=-1):
                 pFD.write (iCallingText + "(l_make_changes?, p_case_name)\n")
-            if operator.and_ (pCogecoOnly==False, iCallingText.find("_cogeco")==-1):
+            if operator.and_ (pCustomOnly==False, iCallingText.find("_cogeco")==-1):
                 pFD.write (iCallingText + "(l_make_changes?, p_case_name)\n")
 
     def writeCasePreamble(self, pFD):
@@ -324,7 +325,7 @@ class CogecoXLSToSW():
         lExternalNames = self.parseExternalNamesSheet(3)
         lVersion = self.getVersion()
         
-        for iSheetNumber in range (4,14):
+        for iSheetNumber in range (4,15):
             try:
                 lsheet = self.s_workbook.sheet_by_index(iSheetNumber)
                 print ('sheet ' + repr(lsheet.name))
@@ -399,7 +400,7 @@ class CogecoXLSToSW():
 
 if __name__== "__main__":
 
-    lXLSToSW = CogecoXLSToSW()
+    lXLSToSW = SovernetXLSToSW()
 
     lXLSToSW.resetFieldManager()
     lXLSToSW.processMainDBWorkBook ('Data Model Mapping 0412.xls')
