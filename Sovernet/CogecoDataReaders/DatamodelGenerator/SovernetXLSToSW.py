@@ -44,13 +44,14 @@ class SovernetXLSToSW():
 
         lFieldDefaultValue=''
         lClassName = pSheet.cell_value(pRow,10)
-        print (lClassName, " classname")
         lFieldName = pSheet.cell_value(pRow, 11)
         lFieldExternalName = pSheet.cell_value(pRow,26)
         lFieldType = pSheet.cell_value(pRow,13)
-        lFieldDefaultValue = pSheet.cell_value(pRow, 12)            
+        lFieldDefaultValue = pSheet.cell_value(pRow, 12)
+
         lFieldLength = pSheet.cell_value(pRow,14)
-        lFieldPriority = pSheet.cell_value(pRow,28)
+        # lFieldPriority = pSheet.cell_value(pRow,28)
+        lFieldPriority = 10
         lFieldText = self.buildSWFieldComment(pSheet, pRow)
 
         lFeaturePoint=pSheet.cell_value(pRow,25)
@@ -72,9 +73,8 @@ class SovernetXLSToSW():
             lField.s_field_join_to  =pSheet.cell_value(pRow,31)
             if lField.isValidJoin()==False:
                 print ("found an invalid join ")
-                lField.showMe()
             
-        lField.showMe()
+        # lField.showMe()
         return lField
 
     def fieldManager(self):
@@ -155,7 +155,7 @@ class SovernetXLSToSW():
                 self.s_fieldmanager.addField(lField)
                 
             except XLSToSWExceptions.FieldNotMapped:
-                    print ('field not mapped went off')
+                    # print ('field not mapped went off')
                     lblankcode =0
             except XLSToSWExceptions.InvalidDSType:
                     print ('Invalid ds type in sheet ' + lsheet.name + ' line ' + repr (iRow))
