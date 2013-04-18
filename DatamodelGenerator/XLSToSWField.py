@@ -1,8 +1,9 @@
-import CogecoExceptions
+import XLSToSWExceptions
+import XLSToSWCustomEnumeratorGenerator
 import operator
 
 
-class CogecoField():
+class XLSToSWField():
     
     s_class_name=''
     s_field_name=''
@@ -16,16 +17,14 @@ class CogecoField():
     s_field_priority=99
     s_field_default_value=''
     
-    s_valid_field_types=['ds_date', 'ds_uint', 'ds_float', 'ds_bool', 'ds_char16canon_vec', 'ds_char16_vec', 'join', 'simple_area', 'simple_point', 'simple_chain', 'chain', 'point', 'sys_id', 'text']
-    s_valid_enumerator_names=['anchor_type', 'conduit_color', 'drop_type', 'figure_eight_type', 'material_type', 'mit_hub_type', 'pole_usage', 'splice_method_type']
-    s_valid_cogeco_enumerator_names=['cogeco_class', 'cogeco_node_type', 'cogeco_route_crossing', 'cogeco_sheath_usage', 'cogeco_size', 'cogeco_fixture_size', 'cogeco_ground_type', 'cogeco_guy_size', 'cogeco_installation_method', 'cogeco_operational_status', 'cogeco_owner', 'cogeco_usage', 'cogeco_nap_type', 'cogeco_port_connection_type', 'cogeco_representation', 'cogeco_status', 'cogeco_strands', 'cogeco_users']
+    s_valid_field_types=['ds_date', 'ds_uint', 'ds_float', 'ds_bool', 'ds_char16canon_vec', 'ds_char16_vec', 'join', 'simple_area', 'simple_point', 'simple_chain', 'chain', 'point', 'sys_id', 'text', 'ds_int']
+    s_valid_enumerator_names=['alt_transportation_type', 'anchor_type', 'conduit_color', 'drop_type', 'figure_eight_type', 'material_type', 'mit_hub_type', 'pole_usage', 'splice_method_type', 'waterway_type']
     
-
     def __init__(self, pclassname='', pfieldname='', pfieldtype=''):
         
-        if pclassname.find(' ')<>-1:
+        if pclassname.find(' ')!=-1:
             raise CogecoExceptions.TrailingSpaceInClassName (pclassname)
-        if pfieldname.find(' ')<>-1:
+        if pfieldname.find(' ')!=-1:
             raise CogecoExceptions.TrailingSpaceInFieldName (pfieldname)
             
         self.s_class_name=pclassname
@@ -65,15 +64,15 @@ class CogecoField():
     def isValidType(self):
 
         # checks through the set of valid data types and then the known enumerator names
-        # if the type is not found in either of those places, a false is returned.
-        
+        # if the type is not found in either of those places, a false is returned.   
         for iType in self.s_valid_field_types:
             if self.fieldType() == iType:
                 return True
         for iType in self.s_valid_enumerator_names:
             if self.fieldType() == iType:
                 return True
-        for iType in self.s_valid_cogeco_enumerator_names:
+        l_custom_enums = XLSToSWCustomEnumeratorGenerator.XLSToSWCustomEnumeratorGenerator()
+        for iType in l_custom_enums.customEnums('Sovernet'):
             if self.fieldType() == iType:
                 return True
 
@@ -114,7 +113,13 @@ class CogecoField():
             
 
     def isEnumField(self):
-        if self.fieldType().lower().find('cogeco')<>-1:
+        if self.fieldType().lower().find('cogeco')!=-1:
+            return True
+        return False
+
+    
+    def isBooleanField(self):
+        if self.fieldType().lower().find('bool')!=-1:
             return True
         return False
     

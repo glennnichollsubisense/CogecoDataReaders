@@ -1,10 +1,10 @@
 
-import CogecoExceptions
-import CogecoField
+import XLSToSWExceptions
+import XLSToSWField
 import operator
 import math
 
-class CogecoFieldManager():
+class XLSToSWFieldManager():
 
 
     s_fields='No Set'
@@ -33,14 +33,18 @@ class CogecoFieldManager():
         for iField in self.s_fields:
             lClassNames.append(iField.className())
         lClassNames.sort()
-        print ('Set of Classnames')
-        print (set(lClassNames))
         return set(lClassNames)
-            
+
+    def showClassesManaged(self):
+        # Prints out the set of classes managed
+        lclassesmanaged=self.classesManaged()
+        print ('Set of Classnames')
+        print (set(lclassesmanaged))
+        
 
     def findField (self, pClassName, pFieldName):
         
-        # Returns the CogecoField for th epClassName, pFieldName pair
+        # Returns the XLSToSWField for th epClassName, pFieldName pair
         for iField in self.s_fields:
             if operator.and_((iField.className() == pClassName),(iField.fieldName() == pFieldName)):
                 return iField                
@@ -68,40 +72,40 @@ class CogecoFieldManager():
         
         # Returns true if the field is not already in the set with different attributes
         # Returns true if the field is not in the set
-        # Raises a condition (CogecoExceptions.InequalityInFields) if the field is already defined with different parameters
+        # Raises a condition (XLSToSWExceptions.InequalityInFields) if the field is already defined with different parameters
 
-        if p_field.className().find(' ')<>-1:
-            raise CogecoExceptions.TrailingSpaceInClassName (p_field.className)
-        if p_field.fieldName().find(' ')<>-1:
-            raise CogecoExceptions.TrailingSpaceInFieldName (p_field.fieldName)
+        if p_field.className().find(' ')!=-1:
+            raise XLSToSWExceptions.TrailingSpaceInClassName (p_field.className)
+        if p_field.fieldName().find(' ')!=-1:
+            raise XLSToSWExceptions.TrailingSpaceInFieldName (p_field.fieldName)
             
 
         if p_field.isValidType() == False:
-            raise CogecoExceptions.InvalidDSType (p_field.fieldType())
+            raise XLSToSWExceptions.InvalidDSType (p_field.fieldType())
 
         if p_field.isValidJoin() == True:
             if p_field.isValidJoin() == False:
-                raise CogecoExceptions.InvalidJoinType (p_field.fieldName())
+                raise XLSToSWExceptions.InvalidJoinType (p_field.fieldName())
 
         if float(math.fabs(float(p_field.fieldPriority())))< float(0.001):    
-            raise CogecoExceptions.PriorityZero ("Adding a field with priority 0??")
+            raise XLSToSWExceptions.PriorityZero ("Adding a field with priority 0??")
 
         if self.findField (p_field.className(), p_field.fieldName())==False:
             return True
         
         l_field = self.findField (p_field.className(), p_field.fieldName())
-        if p_field.fieldExternalName()<>l_field.fieldExternalName():
-            raise CogecoExceptions.InequalityInFields (self.strClashingNames('External Name', p_field, l_field))
-        if p_field.fieldType()<>l_field.fieldType():
-            raise CogecoExceptions.InequalityInFields (self.strClashingNames('Type', p_field, l_field))
-        if p_field.fieldLength()<>l_field.fieldLength():
-            raise CogecoExceptions.InequalityInFields (self.strClashingNames('Length', p_field, l_field))
-        if p_field.fieldUnit()<>l_field.fieldUnit():
-            raise CogecoExceptions.InequalityInFields (self.strClashingNames('Unit', p_field, l_field))
-##        if p_field.fieldComment()<>l_field.fieldComment():
-##            raise CogecoExceptions.InequalityInFields (self.strClashingNames('Comment', p_field, l_field))
-        if p_field.fieldPriority()<>l_field.fieldPriority():
-            raise CogecoExceptions.InequalityInFields (self.strClashingNames('Priority', p_field, l_field))
+        if p_field.fieldExternalName()!=l_field.fieldExternalName():
+            raise XLSToSWExceptions.InequalityInFields (self.strClashingNames('External Name', p_field, l_field))
+        if p_field.fieldType()!=l_field.fieldType():
+            raise XLSToSWExceptions.InequalityInFields (self.strClashingNames('Type', p_field, l_field))
+        if p_field.fieldLength()!=l_field.fieldLength():
+            raise XLSToSWExceptions.InequalityInFields (self.strClashingNames('Length', p_field, l_field))
+        if p_field.fieldUnit()!=l_field.fieldUnit():
+            raise XLSToSWExceptions.InequalityInFields (self.strClashingNames('Unit', p_field, l_field))
+##        if p_field.fieldComment()!=l_field.fieldComment():
+##            raise XLSToSWExceptions.InequalityInFields (self.strClashingNames('Comment', p_field, l_field))
+        if p_field.fieldPriority()!=l_field.fieldPriority():
+            raise XLSToSWExceptions.InequalityInFields (self.strClashingNames('Priority', p_field, l_field))
 
             
         # I am here having found the field and it is already the same with no errors
@@ -130,7 +134,7 @@ class CogecoFieldManager():
        
         lFields = self.findFieldsForClass(pClassName)
         if (len(lFields)==0):
-            raise CogecoExceptions.ClassNotManaged (pClassName)
+            raise XLSToSWExceptions.ClassNotManaged (pClassName)
         
         print ("------------- Class: " + pClassName + '----------------')
 
@@ -151,23 +155,23 @@ class CogecoFieldManager():
             
 if __name__ == "__main__":
     # Test 1&2 - Make an empty manager
-     lFieldManager = CogecoFieldManager()
+     lFieldManager = XLSToSWFieldManager()
      print ("Test 1:" + repr(lFieldManager.fieldsInSet()==[]))
      print ("Test 2:" + repr(lFieldManager.numberofFields()==0))
 
      # Test 3 - Add a single field
-     lCfield1=CogecoField.CogecoField('sheath_with_loc', 'length', 'ds_float')
+     lCfield1=XLSToSWField.XLSToSWField('sheath_with_loc', 'length', 'ds_float')
      lFieldManager.addField(lCfield1)
      print ("Test 3:" + repr(lFieldManager.numberofFields()==1))
 
      # Test 4 - Add another field with the same name, different external name
      # check for a name clash
-     lCfield2=CogecoField.CogecoField('sheath_with_loc', 'length', 'ds_float')
+     lCfield2=XLSToSWField.XLSToSWField('sheath_with_loc', 'length', 'ds_float')
      lCfield2.s_field_external_name='Length'
      lHaveException=False
      try:
          lFieldManager.addField(lCfield2)
-     except CogecoExceptions.InequalityInFields:
+     except XLSToSWExceptions.InequalityInFields:
          lHaveException=True
      print ("Test 4:" + repr(lHaveException))
 
@@ -177,7 +181,7 @@ if __name__ == "__main__":
 
      # Test 6&7 - add a new field.
      # check no of total records is 2, no. of classes is 2
-     lCfield3=CogecoField.CogecoField('sheath_annotation', 'text', 'ds_uint')
+     lCfield3=XLSToSWField.XLSToSWField('sheath_annotation', 'text', 'ds_uint')
      lFieldManager.addField(lCfield3)
      print ("Test 6:" + repr(lFieldManager.numberofFields()==2))
      print ("Test 7:" + repr(len(lFieldManager.classesManaged())==2))
@@ -185,20 +189,20 @@ if __name__ == "__main__":
      
      # Test 8&9 - add 2 more fields to sheath_with loc
      # check total no of records is 4, no of fields defined for sheath_with_loc is 3
-     lCfield4=CogecoField.CogecoField('sheath_with_loc', 'pins', 'ds_uint')
+     lCfield4=XLSToSWField.XLSToSWField('sheath_with_loc', 'pins', 'ds_uint')
      lFieldManager.addField(lCfield4)
-     lCfield5=CogecoField.CogecoField('sheath_with_loc', 'locs', 'ds_uint')
+     lCfield5=XLSToSWField.XLSToSWField('sheath_with_loc', 'locs', 'ds_uint')
      lFieldManager.addField(lCfield5)
      print ("Test 8:" + repr(lFieldManager.numberofFields()==4))
      print ("Test 9:" + repr(len(lFieldManager.findFieldsForClass('sheath_with_loc'))==3))
                                 
 
      # Test 10, see if it picks up a priority of 0 field
-     lCfield10=CogecoField.CogecoField('sheath_with_loc', 'priorityzero', 'text')
+     lCfield10=XLSToSWField.XLSToSWField('sheath_with_loc', 'priorityzero', 'text')
      lCfield10.s_field_priority=0.0
      try:
          lFieldManager.addField(lCfield10)
-     except CogecoExceptions.PriorityZero:
+     except XLSToSWExceptions.PriorityZero:
          lHaveException=True     
      
      lFieldManager.writeCaseDescription ('sheath_with_loc')

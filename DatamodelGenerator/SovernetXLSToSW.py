@@ -20,8 +20,6 @@ class CogecoXLSToSW():
     s_fieldmanager=XLSToSWFieldManager.XLSToSWFieldManager()
 
     def __init__(self):
-        self.s_filename=self.s_base_folder + '20121220 CCAD datamodel for conversion v17.xls'
-        self.s_workbook=xlrd.open_workbook(self.s_filename)
         self.s_magikcodewriter = MagikCodeWriter.MagikCodeWriter()
         
 
@@ -88,13 +86,11 @@ class CogecoXLSToSW():
         lsheet = self.s_workbook.sheet_by_index(pSheetNumber)
         lenumerators=[]
         try:
-            for iRow in range(2, 30):
+            for iRow in range(2, 11):
                 lEnumeratorName=lsheet.cell_value(iRow, 0)
                 lEnumeratorValues=lsheet.cell_value(iRow, 1)
                 lEnumeratorDefault=lsheet.cell_value(iRow, 2)
                 lenumerators.append ([lEnumeratorName, lEnumeratorValues, lEnumeratorDefault])
-
-                
 
         except IndexError:
             lblankcode= 0   #print("index error went off")
@@ -324,11 +320,11 @@ class CogecoXLSToSW():
         
         lEnumerators = []
     
-        lEnumerators = self.parseDynamicEnumeratorsSheet(4)
-        lExternalNames = self.parseExternalNamesSheet(5)
+        lEnumerators = self.parseDynamicEnumeratorsSheet(1)
+        lExternalNames = self.parseExternalNamesSheet(3)
         lVersion = self.getVersion()
         
-        for iSheetNumber in range (7,128):
+        for iSheetNumber in range (4,14):
             try:
                 lsheet = self.s_workbook.sheet_by_index(iSheetNumber)
                 print ('sheet ' + repr(lsheet.name))
@@ -406,10 +402,4 @@ if __name__== "__main__":
     lXLSToSW = CogecoXLSToSW()
 
     lXLSToSW.resetFieldManager()
-    lXLSToSW.processMainDBWorkBook ('20121220 CCAD datamodel for conversion v17.xls')
-
-    lXLSToSW.resetFieldManager()
-    lXLSToSW.processLandbaseWorkBook ('20121220 Cogeco CCAD and CGO Landbase v17.xls', 'case_upgrade_cad_and_cgo_landbase.magik', 'CCAD_landbase', 'ccad_landbase_view', 2000, 2000, 20)
-
-    lXLSToSW.resetFieldManager()
-    lXLSToSW.processLandbaseWorkBook ('20121220 Cogeco Govt Landbase v17.xls', 'case_upgrade_gov_landbase.magik', 'Govt_landbase', 'govt_landbase_view', 1000, 1000, 10)
+    lXLSToSW.processMainDBWorkBook ('Data Model Mapping 0412.xls')
