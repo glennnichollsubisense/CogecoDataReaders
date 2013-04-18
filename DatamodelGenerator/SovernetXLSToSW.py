@@ -14,7 +14,8 @@ class SovernetXLSToSW():
     s_workbook='not set'
     s_show_features_p=True
     s_magikcodewriter='not set'
-    s_base_folder='/home/glennx/Dropbox/Sovernet/'
+#    s_base_folder='/home/glennx/Dropbox/Sovernet/'
+    s_base_folder='e:/data/'
     
      
     s_fieldmanager=XLSToSWFieldManager.XLSToSWFieldManager()
@@ -139,7 +140,7 @@ class SovernetXLSToSW():
         lEnumValuesStr+='}'
         if pEnum[0].find('sov')==-1:
             pFD.write('#')
-        pFD.write ("cogeco_upgrade_enums(l_make_changes?, p_case_name, " + '"' + pEnum[0] + '"' + ',' + lEnumValuesStr + ',' + '"' + pEnum[2] + '"' + ")\n")
+        pFD.write ("custom_upgrade_enums(l_make_changes?, p_case_name, " + '"' + pEnum[0] + '"' + ',' + lEnumValuesStr + ',' + '"' + pEnum[2] + '"' + ")\n")
         
     def parseSheet(self, pSheetNumber=0):
 
@@ -168,9 +169,9 @@ class SovernetXLSToSW():
     def writeCaseCallingLines (self, pCallingTexts, pCustomOnly, pFD):
         for iCallingText in pCallingTexts:
             print ("case calling " + iCallingText)
-            if operator.and_ (pCustomOnly==True, iCallingText.find("_cogeco")!=-1):
+            if operator.and_ (pCustomOnly==True, iCallingText.find("_sovernet")!=-1):
                 pFD.write (iCallingText + "(l_make_changes?, p_case_name)\n")
-            if operator.and_ (pCustomOnly==False, iCallingText.find("_cogeco")==-1):
+            if operator.and_ (pCustomOnly==False, iCallingText.find("_sovernet")==-1):
                 pFD.write (iCallingText + "(l_make_changes?, p_case_name)\n")
 
     def writeCasePreamble(self, pFD):
@@ -184,12 +185,12 @@ class SovernetXLSToSW():
             pFD.write(iline)
 
     def writeEnumUsages(self, pFD):
-        pFD.write ("_global cogeco_make_enum_usages<<\n")
+        pFD.write ("_global custom_make_enum_usages<<\n")
         pFD.write ("_proc(p_make_changes?)\n")
         for iClassName in self.fieldManager().classesManaged():
             for iField in self.fieldManager().findFieldsForClass(iClassName):
                 if iField.isEnumField():
-                    	pFD.write ('cogeco_make_enum_use (' + ':' + iField.fieldType() + ',' + ':' + iField.className() + ',' + ':' + iField.fieldName() + ',p_make_changes?)\n')
+                    	pFD.write ('sovernet_make_enum_use (' + ':' + iField.fieldType() + ',' + ':' + iField.className() + ',' + ':' + iField.fieldName() + ',p_make_changes?)\n')
         pFD.write ("gis_program_manager.cached_dataset(:dynamic_enumerator).commit()\n")            	
         pFD.write ("_endproc\n")
 
@@ -200,28 +201,28 @@ class SovernetXLSToSW():
             return
 
         if pField.isIDField():
-            pFD.write("cogeco_make_id_field(o, l_make_changes?)\n")
+            pFD.write("custom_make_id_field(o, l_make_changes?)\n")
             return
         
         if pField.isPNIField():
             if pField.isStringType():
-                pFD.write("cogeco_update_length_of_pni_field(o, " + "'" + pField.fieldName() + "'" + ", " + repr(pField.fieldLength()) + ",  p_make_changes?)\n")
+                pFD.write("custom_update_length_of_pni_field(o, " + "'" + pField.fieldName() + "'" + ", " + repr(pField.fieldLength()) + ",  p_make_changes?)\n")
             else:
                 pFD.write("# Using PNI field " + pClassName + "." + pField.fieldName() + "\n")
             return 
 
         if pField.isPhysicalField():
-            pFD.write ("cogeco_make_physical_field(o, :" + pField.fieldName() + ", " + '"' + pField.fieldExternalName() + '"' + ", :" + pField.fieldType() + ", l_make_changes?, " + pField.convertToString() + "," + "'" + pField.fieldComment() + "'" + ")\n")
+            pFD.write ("custom_make_physical_field(o, :" + pField.fieldName() + ", " + '"' + pField.fieldExternalName() + '"' + ", :" + pField.fieldType() + ", l_make_changes?, " + pField.convertToString() + "," + "'" + pField.fieldComment() + "'" + ")\n")
             return
         
         if pField.isGeometryField():
-            pFD.write ("cogeco_make_geometry_field(o, :" + pField.fieldName() + ", " + '"' + pField.fieldExternalName() + '"' + ", :" + pField.fieldType() + ", l_make_changes?, " + "(" + repr(pField.fieldPriority()) + ")" + ".floor" + ")\n")
+            pFD.write ("custom_make_geometry_field(o, :" + pField.fieldName() + ", " + '"' + pField.fieldExternalName() + '"' + ", :" + pField.fieldType() + ", l_make_changes?, " + "(" + repr(pField.fieldPriority()) + ")" + ".floor" + ")\n")
             return
 
         if pField.fieldDefaultValue!='':   
-            pFD.write ('cogeco_make_enum_field (o, ' + ':' + pField.fieldName() + ',' + '"' + pField.fieldExternalName() + '"' + ',' + ':' + pField.fieldType() + ',' + 'l_make_changes?' + ',' + '"' + pField.fieldDefaultValue() + '"' + ')\n')
+            pFD.write ('custom_make_enum_field (o, ' + ':' + pField.fieldName() + ',' + '"' + pField.fieldExternalName() + '"' + ',' + ':' + pField.fieldType() + ',' + 'l_make_changes?' + ',' + '"' + pField.fieldDefaultValue() + '"' + ')\n')
         else:
-            pFD.write ('cogeco_make_enum_field (o, ' + ':' + pField.fieldName() + ',' + '"' + pField.fieldExternalName() + '"' + ',' + ':' + pField.fieldType() + ',' + 'l_make_changes?)\n')
+            pFD.write ('custom_make_enum_field (o, ' + ':' + pField.fieldName() + ',' + '"' + pField.fieldExternalName() + '"' + ',' + ':' + pField.fieldType() + ',' + 'l_make_changes?)\n')
 
 
     def writeCaseObjectTail (self, pFD):
@@ -272,7 +273,7 @@ class SovernetXLSToSW():
         
         with open(self.s_base_folder + pTargetFileName, 'w') as lFD:
 
-            lFD.write ("# Cogeco Case Upgrade for " + lVersion + "\n")
+            lFD.write ("# Custom Case Upgrade for " + lVersion + "\n")
             
             self.writeCasePreamble(lFD)
             
@@ -300,7 +301,7 @@ class SovernetXLSToSW():
             lFD.write ("_if l_make_changes? _is _true\n")
             lFD.write ("_then\n")
             self.writeCaseCallingLines(lCallingLines, True, lFD)
-            lFD.write ("cogeco_make_joins(l_case_view, l_make_changes?)\n")
+            lFD.write ("custom_make_joins(l_case_view, l_make_changes?)\n")
             for iextname in lExternalNames:
                 lFD.write ("change_external_name(" + ":" + iextname[0] + "," + "'" + iextname[1] + "'" + "," + "'" + iextname[2] + "'" + "," + "l_case_view" + "," + "l_make_changes?" + ")\n")
             lFD.write ("_endif\n")        
@@ -344,7 +345,7 @@ class SovernetXLSToSW():
         
         with open(self.s_base_folder + 'case_upgrade.magik', 'w') as lFD:
 
-            lFD.write ("# Cogeco Case Upgrade for " + lVersion + "\n")
+            lFD.write ("# Custom Case Upgrade for " + lVersion + "\n")
             
             self.writeCasePreamble(lFD)
             self.writeManualUpdatesToEnums(lFD)
@@ -375,7 +376,7 @@ class SovernetXLSToSW():
                 self.writeEnumCallingLine(iEnum, lFD)
 
             
-            lFD.write ("cogeco_make_enum_usages(l_make_changes?)\n")
+            lFD.write ("custom_make_enum_usages(l_make_changes?)\n")
             
             self.writeCaseCallingLines(lCallingLines, False, lFD)
             lFD.write ("_if l_make_changes? _is _true\n")
@@ -383,8 +384,8 @@ class SovernetXLSToSW():
             self.writeCaseCallingLines(lCallingLines, True, lFD)
           
             
-            lFD.write ("cogeco_make_joins(l_case_view, l_make_changes?)\n")
-            lFD.write ("cogeco_miscellaneous_changes(l_case_view, l_make_changes?)\n")
+            lFD.write ("custom_make_joins(l_case_view, l_make_changes?)\n")
+            lFD.write ("custom_miscellaneous_changes(l_case_view, l_make_changes?)\n")
             for iextname in lExternalNames:
                 lFD.write ("change_external_name(" + ":" + iextname[0] + "," + "'" + iextname[1] + "'" + "," + "'" + iextname[2] + "'" + "," + "l_case_view" + "," + "l_make_changes?" + ")\n")
             lFD.write ("_endif\n")        

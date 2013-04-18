@@ -1,0 +1,383 @@
+_package sw
+
+_pragma(classify_level=restricted, topic={case}, usage={external, internal})
+_method case_field.archive_manifold << a_man_name
+	## 
+	## Look up in the manifold_map to see if the name has changed.
+	## Get the number for the manifold and set the manifold for
+	## the field.
+	##
+	_local cm << _self.source_view.collections[:sw_gis!case_manifold].select(
+										 predicate.eq(:name, a_man_name.trim_spaces())).an_element()
+
+	_if (m_rec << _self.manifold_rec) _is _unset
+	_then
+		m_rec << _self.manifold_table.new_at(_self.id)
+	_endif 
+	m_rec.manifold << cm.number
+_endmethod
+$
+
+_package user
+_global custom_get_default_case_name <<
+_proc()
+_return :case
+_endproc
+$
+
+
+_global custom_update_length_of_pni_field<<
+_proc (pCaseObject, pFieldName, pNewLength, pMakechanges?)
+_local lField << pCaseObject.get_field(pFieldName)
+_if lField _is _unset
+_then
+condition.raise (:user_error, :string, 'case object has no field called ' + pFieldName)
+_endif
+_local lInfoString<<''
+_if lField.print_width ~= pNewLength
+_then
+lInfoString<<'changing length of ' + pCaseObject.name + '.' + pFieldName + ' to ' + pNewLength.write_string 
+_if pMakechanges? _is _true
+_then
+lField.sys!perform (:int!set_field_size|()|, pNewLength.floor)
+lField.print_width<< pNewLength.floor
+_else
+lInfoString << ''.concatenation ('!! NOT WRITING:: ', lInfoString)
+_endif
+_endif
+write (lInfoString)
+_endproc
+
+
+_global custom_make_physical_field<<
+_proc (pCaseObject, pFieldName, pFieldExternalName, pFieldtype, pMakeChanges?, _optional pFieldSize, pFieldComment)
+_try
+_local an_f << pCaseObject.get_field(pFieldName)
+_if an_f _is _unset
+_then
+_local l_info_string << ''.concatenation ('made field ', pCaseObject.name, ':', pFieldName)
+_if pMakeChanges? _is _true
+_then
+an_f << pCaseObject.add_field(pFieldName, pFieldExternalName, :physical)
+an_f.set_field_type_to(pFieldType, pFieldSize)
+an_f.mandatory? << _false
+_if pFieldComment _isnt _unset
+_then
+	an_f.text<< pFieldComment
+	an_f.help_text<< 'Migrated from ' + pFieldComment
+_endif
+ 
+_else
+l_info_string << ''.concatenation ('!! NOT WRITING:: ', l_info_string)
+_endif
+write(l_info_string)
+_endif
+_when does_not_understand
+write ( ''.concatenation ('dnu went off in ', pCaseObject.name, ':', pFieldName))
+_endtry
+_endproc
+$
+_global custom_make_geometry_field<<
+_proc (pCaseObject, pFieldName, pFieldExternalName, pFieldtype, pMakeChanges?, _optional pPriority)
+_try
+_local an_f << pCaseObject.get_field(pFieldName)
+_if an_f _is _unset
+_then
+_local l_info_string << ''.concatenation ('made field ', pCaseObject.name, ':', pFieldName)
+_if PMakeChanges? _is _true
+_then
+an_f << pCaseObject.add_field(pFieldName, pFieldExternalName, :geometric)
+an_f.set_geometry_type(pFieldType)
+_if pFieldType _is :chain _orif
+    pFieldType _is :point
+_then
+an_f.archive_manifold<< "hfc_network"	
+_endif
+an_f.mandatory? << _false
+an_f.priority << pPriority
+_else
+l_info_string << ''.concatenation ('!! NOT WRITING:: ', l_info_string)
+_endif
+write(l_info_string)
+_endif
+_when does_not_understand
+write ( ''.concatenation ('dnu went off in ', pCaseObject.name, ':', pFieldName))
+_endtry
+_endproc
+$
+_global custom_upgrade_enums<<
+_proc ( _optional p_make_changes?, p_case_name, p_enum_name, p_enum_values, p_enum_default)
+
+
+	_local l_case_name << p_case_name.default(custom_get_default_case_name())
+	_local l_make_changes? << p_make_changes?.default(_false)
+
+	_local de_view              << gis_program_manager.cached_dataset(:dynamic_enumerator)
+	
+	_local l_enum_def_table     << de_view.collections[:mit_enumerator_definition]
+	_local l_enum_int_str_table << de_view.collections[:mit_int_str_enumeration]
+	
+	# ... DEFINITION ...
+	l_pred1 << predicate.eq (:enumerator_name, p_enum_name)
+	_if l_enum_def_table.select(l_pred1).an_element() _is _unset
+	_then
+		l_rec << l_enum_def_table.new_detached_record()
+		l_rec.enumerator_name 	<< p_enum_name 
+		l_rec.storage_field 	<< 'stored_val' 
+		l_rec.visible_field 	<< 'visible_val' 
+
+		l_rec.view_name 	<< 'dynamic_enumerators' 
+		l_rec.table_name 	<< 'mit_int_str_enumeration' 
+		l_rec.all_values 	<< 'enumerator_name'
+
+		l_info_string << 'Created record for enum_definition, ' + p_enum_name
+		_if l_make_changes? _is _true
+		_then
+			l_rec << l_enum_def_table.insert(l_rec)
+		_else
+			l_info_string << ''.concatenation ('!! NOT WRITING:: ', l_info_string)
+		_endif
+		write (l_info_string)
+	_endif
+
+	# ... INT_STR_ENUMERATION
+
+
+	_local i_counter << 0
+	_for i_enum_value _over  p_enum_values.fast_elements()
+	_loop
+		l_pred1 << predicate.eq(:enumerator_name, p_enum_name)
+		l_pred2 << predicate.eq(:visible_val, i_enum_value)
+		_if l_enum_int_str_table.select(l_pred1 _and l_pred2).an_element() _is _unset
+		_then
+			l_rec << l_enum_int_str_table.new_detached_record()
+			l_rec.enumerator_name << p_enum_name
+			l_rec.stored_val << i_counter
+			l_rec.visible_val << i_enum_value
+			
+			l_info_string << ''.concatenation(' Adding enumerator ', p_enum_name, '.', i_enum_value)
+			_if l_make_changes? _is _true
+			_then
+				l_rec << l_enum_int_str_table.insert(l_rec)
+			_else
+				l_info_string << ''.concatenation ('!! NOT WRITING:: ', l_info_string)
+			_endif
+			write (l_info_string)
+
+		_endif
+		i_counter+<< 1
+	_endloop	
+_endproc
+$
+
+_global custom_make_enum_field<<
+	_proc (pCaseObject, pFieldName, pFieldExternalName, pFieldtype, pMakeChanges?, _optional pDefaultValue)
+		_try
+			_local an_f << pCaseObject.get_field(pFieldName)
+			_if an_f _is _unset
+			_then
+				_local l_info_string << ''.concatenation ('made field ', pCaseObject.name, ':', pFieldName)
+				_if PMakeChanges? _is _true
+				_then
+					an_f << pCaseObject.add_field(pFieldName, pFieldExternalName, :physical)
+					an_f.set_field_type_to(pFieldType, _unset)
+					an_f.mandatory? << _true
+					an_f.default_value<<pDefaultValue.default("Unknown")
+				_else
+					l_info_string << ''.concatenation ('!! NOT WRITING:: ', l_info_string)
+				_endif
+				write(l_info_string)
+			_endif
+		_when does_not_understand
+			write ( ''.concatenation ('dnu went off in ', pCaseObject.name, ':', pFieldName))
+		_endtry
+	_endproc
+$
+
+_global custom_make_id_field<<
+_proc (pCaseObject, pMakeChanges?)
+	_try
+		_local an_f << pCaseObject.get_field(:id)
+		_if an_f _is _unset
+		_then
+			_local l_info_string << ''.concatenation ('made field ', pCaseObject.name, ':id')
+			_if PMakeChanges? _is _true
+			_then
+				an_f << pCaseObject.add_field('id', 'ID', :physical)
+				an_f.set_field_type_to(:|sys_id|, _unset)
+				an_f.mandatory? << _true
+				an_f.set_generator_method_name(:make_sysid|()|)
+				an_f.set_key_status_to(_true)
+			_else
+				l_info_string << ''.concatenation ('!! NOT WRITING:: ', l_info_string)
+			_endif
+			write(l_info_string)
+		_endif
+	_when does_not_understand
+		write ( ''.concatenation ('dnu went off in ', pCaseObject.name, ':id'))
+	_endtry
+_endproc
+$
+
+_global custom_make_enum_use<<
+_proc(pEnumName, pTableName, pFieldName, l_make_changes?)
+	
+	_local de_view              << gis_program_manager.cached_dataset(:dynamic_enumerator)
+	_local l_enum_use_table     << de_view.collections[:mit_enumerator_usage]
+	_local l_pred1 << predicate.new (:enumerator_name, :eq, pEnumName)
+	_local l_pred2 << predicate.new (:table_name, :eq, pTableName)
+	
+	l_result << l_enum_use_table.select(l_pred1 _and l_pred2)
+	_if _not l_result.empty?
+	_then
+		_return
+	_endif
+
+	l_pred1 << predicate.eq (:enumerator_name, pEnumName)
+	l_pred2 << predicate.eq (:field_name, pFieldName)
+	l_pred3 << predicate.eq (:table_name, pTableName)
+	_if l_enum_use_table.select(l_pred1 _and l_pred2 _and l_pred3).an_element() _is _unset
+	_then
+		l_rec << l_enum_use_table.new_detached_record()
+		l_rec.enumerator_name << pEnumName
+		l_rec.table_name      << pTableName
+		l_rec.field_name      << pFieldName
+		l_rec.mapped          << _true
+
+		l_info_string << 'Created enum record for ' + pTableName + '.' + pFieldName
+		_if l_make_changes? _is _true
+		_then
+			l_rec << l_enum_use_table.insert(l_rec)
+		_else
+			l_info_string << ''.concatenation ('!! NOT WRITING:: ', l_info_string)
+		_endif
+		write (l_info_string)		
+	_endif
+_endproc
+$
+
+
+_global change_external_name <<
+_proc (pIntName, pPNIName, pCogecoName, pCaseView, _optional pMakeChanges?)
+	_local gpm << gis_program_manager
+	_local lpred << predicate.eq(:name, pIntName)
+	_local lobj << pCaseView.collections[:sw_gis!case_object].select(lpred).an_element()
+	_if lobj _is _unset
+	_then
+		condition.raise (:error, :string, "no object called " + pIntName.write_string)
+	_endif
+
+	linfostring<< "Changed external name of " + pIntName + "." + pPNIName + " to " + pCogecoName
+	_if pMakeChanges?.default(_false) _is _true
+	_then
+
+		lobj.e_name<< pCogecoName 
+	_else
+		linfostring<< ''.concatenation ("!!!NOT WRITING!!!", linfostring)
+	_endif
+	write (linfostring)
+
+_endproc
+
+
+_global gCreateAlternatives <<
+	_proc (pVersionString, _optional pCaseName,  pGoto?)
+
+		_local lgpm << gis_program_manager
+		_local v_g << lgpm.cached_dataset(:gis)
+		_local v_t << lgpm.cached_dataset(:template)
+		_local v_de << lgpm.cached_dataset(:dynamic_enumerator)
+		_local v_c << lgpm.cached_dataset(pCaseName.default(:case))
+		_local v_s << lgpm.style_view
+		_local v_a << lgpm.ace_view
+
+		lversionstring<< "".concatenation("testing Cogeco model ", pVersionString)
+		_try
+			_for i_view _over {v_a,v_c,v_g,v_t,v_de,v_s}.elements()
+			_loop
+				i_view.goto_top_alternative()
+				i_view.create_alternative (lversionstring)
+				i_view.checkpoint("b4 any changes")
+				_if pGoto? _is _true
+				_then
+					i_view.go_to_alternative (lversionstring)
+					i_view.switch(:write)
+				_endif
+			_endloop
+		_when ds_alternative_is_updated, db_thing_already_exists
+			write ("Error ")
+			v_g.rollback()
+			v_t.rollback()
+			v_de.rollback()
+			v_s.rollback()
+			v_a.rollback()
+		_endtry
+	_endproc
+$
+
+_global gGotoAlternatives <<
+_proc (pVersionString, _optional pCaseName)
+
+	_local lgpm << gis_program_manager
+	_local v_g << lgpm.cached_dataset(:gis)
+	_local v_t << lgpm.cached_dataset(:template)
+	_local v_de << lgpm.cached_dataset(:dynamic_enumerator)
+		_local v_c << lgpm.cached_dataset(pCaseName.default(:case))
+	_local v_s << lgpm.style_view
+	_local v_a << lgpm.ace_view
+
+	lversionstring<< "".concatenation("testing Cogeco model ", pVersionString)
+	_for i_view _over {v_a,v_c,v_g,v_t,v_de,v_s}.elements()
+	_loop
+		i_view.goto_top_alternative()
+		i_view.go_to_alternative (lversionstring)
+		i_view.switch(:write)
+	_endloop
+_endproc
+$
+
+global gMakeLandbaseEnumerators  << 
+_proc ()
+_local ft << case_field_type.new_from_archive(
+				       {"cogeco_waterway_type", 
+				       :ds_uint, 
+				       True, 
+				       True, 
+				       _unset, 
+				       0, 
+				       unset, 
+				       _unset, _unset})
+
+_local enum << ft.enumerator
+enum.archive_domain_class << "string"
+enum.type << "Mapping"
+
+
+enum.add_archive_values(0, "Unknown")
+enum.add_archive_values(1, "River")
+enum.add_archive_values(2, "Lake")
+enum.add_archive_values(3, "Sea")
+enum.add_archive_values(4, "Canal")
+
+
+_local ft << case_field_type.new_from_archive(
+				       {"cogeco_transportation_route_type", 
+				       :ds_uint, 
+				       True, 
+				       True, 
+				       _unset, 
+				       0, 
+				       unset, 
+				       _unset, _unset})
+
+_local enum << ft.enumerator
+enum.archive_domain_class << "string"
+enum.type << "Mapping"
+
+
+enum.add_archive_values(0, "Unknown")
+enum.add_archive_values(1, "Road")
+enum.add_archive_values(2, "RailRoad")
+enum.add_archive_values(3, "Highway")
+_endproc
+$

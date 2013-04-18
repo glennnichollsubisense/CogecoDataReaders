@@ -1,0 +1,88 @@
+
+_global cogeco_miscellaneous_changes<<
+_proc (pCaseView, pMakechanges?)
+
+	_local l_id_fields << {
+				      :address_id,
+				      :aerial_route_id,
+				      :anchor_id,
+				      :cogeco_frame_id,
+				      :cogeco_service_area_id,
+				      :cogeco_province_boundary_id,
+				      :cogeco_customer_id,
+				      :cogeco_fibre_cell_id,
+				      :cogeco_rm_boundary_id,
+				      :cogeco_fsa_boundary_id,
+				      :cogeco_franchise_tax_boundary_id,
+				      :figure_eight_id,
+				      :ground_id,
+				      :midspan_junction_id,
+				      :mit_conduit_id,
+				      :mit_hub_id,
+				      :mit_rme_port_id,
+				      :mit_shelf_id,
+				      :optical_node_id,
+				      :point_of_interest_id,
+				      :pole_id,
+				      :sheath_splice_id,
+				      :sheath_with_loc_id,
+				      :street_id,
+				      :sheath_with_loc_terminal_id,
+				      :underground_route_id,
+				      :uub_id
+			      }
+	_local l_pred << predicate.eq(:name, :cogeco_migration_attributes)
+	_local l_migration_attributes << pCaseView.collections[:sw_gis!case_object].select(l_pred).an_element()
+
+	_for i_id_field _over l_id_fields.fast_elements()
+	_loop
+		_local lInfoString<<"Made cogeco_migration_attributes." + i_id_field.write_string + " not mandatory" 
+		_local l_field << l_migration_attributes.get_field(i_id_field)
+		_if pMakechanges?
+		_then
+			l_field.mandatory?<< _false
+		_else
+			lInfoString<< ''.concatenation ('!! NOT WRITING:: ', lInfoString)
+		_endif
+		write (lInfoString)
+	_endloop
+	
+	_local lIntExtNames << hash_table.new_with(:cogeco_optical_loss, "Cogeco Optical Loss",
+						   :cogeco_customer, "Cogeco Customer",
+						   :cogeco_fibre_cell, "Fibre Cell",
+						   :cogeco_frame, "Cogeco Frame",
+						   :cogeco_franchise_tax_boundary, "Franchise Tax Boundary",
+						   :cogeco_fsa_boundary, "FSA Boundary",
+						   :cogeco_migration_attributes, "Migration Attributes",
+						   :cogeco_rm_boundary, "RM Boundary",
+						   :cogeco_service_area, "Cogeco Service Area",
+						   :cogeco_splice_tray_detail, "Splice Tray Detail",
+						   :cogeco_province_boundary, "Province Boundary"
+					  )
+
+	_for iintname, iextname _over lIntExtNames.fast_keys_and_elements()
+	_loop
+		_local lInfoString<< "Changing name of " + iintname + " to " + iextname
+		_local l_b_pred << predicate.eq (:name, iintname)
+		_if pMakechanges?
+		_then
+			_local lcaseobj << pCaseView.collections[:sw_gis!case_object].select(l_b_pred).an_element()
+			lcaseobj.e_name<< iextname
+		_else
+			lInfoString<< ''.concatenation ('!! NOT WRITING:: ', lInfoString)
+		_endif
+		
+	_endloop
+
+	# Setting the external name of address.address_number to 'Civic No.'
+	lpred << predicate.eq(:name, :address)
+	_local laddressobject << pCaseView.collections[:sw_gis!case_object].select(lpred).an_element()
+	_local lfield << laddressobject.get_field('address_number')
+	lfield.e_name<< 'Civic No.'
+
+	# Setting the external name of address.zip_code to 'Postal Code'
+	lfield << laddressobject.get_field('zip_code')
+	lfield.e_name<< 'Postal Code'
+
+_endproc
+
