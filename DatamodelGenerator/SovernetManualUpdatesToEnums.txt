@@ -1,0 +1,48 @@
+
+_global custom_miscellaneous_changes<<
+_proc (pCaseView, pMakechanges?)
+
+	_local l_id_fields << {
+				      :building_id,
+				      :pole_id,
+				      :sheath_id,
+				      :underground_route_id,
+				      :uub_id
+			      }
+	_local l_pred << predicate.eq(:name, :sovernet_migration_attributes)
+	_local l_migration_attributes << pCaseView.collections[:sw_gis!case_object].select(l_pred).an_element()
+
+	_for i_id_field _over l_id_fields.fast_elements()
+	_loop
+		_local lInfoString<<"Made sovernet_migration_attributes." + i_id_field.write_string + " not mandatory" 
+		_local l_field << l_migration_attributes.get_field(i_id_field)
+		_if pMakechanges?
+		_then
+			l_field.mandatory?<< _false
+		_else
+			lInfoString<< ''.concatenation ('!! NOT WRITING:: ', lInfoString)
+		_endif
+		write (lInfoString)
+	_endloop
+	
+	_local lIntExtNames << hash_table.new_with(:sovernet_migration_attributes, "Migration Attributes",
+	                                           :sovernet_construction_zone, "Construction Zone",
+						   :sovernet_footstamp, "Footstamp",
+						   :sovernet_fibre_route, "Fiber Route")
+
+	_for iintname, iextname _over lIntExtNames.fast_keys_and_elements()
+	_loop
+		_local lInfoString<< "Changing name of " + iintname + " to " + iextname
+		_local l_b_pred << predicate.eq (:name, iintname)
+		_if pMakechanges?
+		_then
+			_local lcaseobj << pCaseView.collections[:sw_gis!case_object].select(l_b_pred).an_element()
+			lcaseobj.e_name<< iextname
+		_else
+			lInfoString<< ''.concatenation ('!! NOT WRITING:: ', lInfoString)
+		_endif
+		
+	_endloop
+
+_endproc
+

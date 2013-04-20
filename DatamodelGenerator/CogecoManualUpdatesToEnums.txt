@@ -1,5 +1,5 @@
 
-_global cogeco_miscellaneous_changes<<
+_global custom_miscellaneous_changes<<
 _proc (pCaseView, pMakechanges?)
 
 	_local l_id_fields << {

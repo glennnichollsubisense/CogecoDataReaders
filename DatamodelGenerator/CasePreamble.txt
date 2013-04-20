@@ -258,7 +258,7 @@ $
 
 
 _global change_external_name <<
-_proc (pIntName, pPNIName, pCogecoName, pCaseView, _optional pMakeChanges?)
+_proc (pIntName, pPNIName, pCustomName, pCaseView, _optional pMakeChanges?)
 	_local gpm << gis_program_manager
 	_local lpred << predicate.eq(:name, pIntName)
 	_local lobj << pCaseView.collections[:sw_gis!case_object].select(lpred).an_element()
@@ -267,11 +267,11 @@ _proc (pIntName, pPNIName, pCogecoName, pCaseView, _optional pMakeChanges?)
 		condition.raise (:error, :string, "no object called " + pIntName.write_string)
 	_endif
 
-	linfostring<< "Changed external name of " + pIntName + "." + pPNIName + " to " + pCogecoName
+	linfostring<< "Changed external name of " + pIntName + "." + pPNIName + " to " + pCustomName
 	_if pMakeChanges?.default(_false) _is _true
 	_then
 
-		lobj.e_name<< pCogecoName 
+		lobj.e_name<< pCustomName 
 	_else
 		linfostring<< ''.concatenation ("!!!NOT WRITING!!!", linfostring)
 	_endif
@@ -291,7 +291,7 @@ _global gCreateAlternatives <<
 		_local v_s << lgpm.style_view
 		_local v_a << lgpm.ace_view
 
-		lversionstring<< "".concatenation("testing Cogeco model ", pVersionString)
+		lversionstring<< "".concatenation("testing Custom model ", pVersionString)
 		_try
 			_for i_view _over {v_a,v_c,v_g,v_t,v_de,v_s}.elements()
 			_loop
@@ -326,58 +326,12 @@ _proc (pVersionString, _optional pCaseName)
 	_local v_s << lgpm.style_view
 	_local v_a << lgpm.ace_view
 
-	lversionstring<< "".concatenation("testing Cogeco model ", pVersionString)
+	lversionstring<< "".concatenation("testing Custom model ", pVersionString)
 	_for i_view _over {v_a,v_c,v_g,v_t,v_de,v_s}.elements()
 	_loop
 		i_view.goto_top_alternative()
 		i_view.go_to_alternative (lversionstring)
 		i_view.switch(:write)
 	_endloop
-_endproc
-$
-
-global gMakeLandbaseEnumerators  << 
-_proc ()
-_local ft << case_field_type.new_from_archive(
-				       {"cogeco_waterway_type", 
-				       :ds_uint, 
-				       True, 
-				       True, 
-				       _unset, 
-				       0, 
-				       unset, 
-				       _unset, _unset})
-
-_local enum << ft.enumerator
-enum.archive_domain_class << "string"
-enum.type << "Mapping"
-
-
-enum.add_archive_values(0, "Unknown")
-enum.add_archive_values(1, "River")
-enum.add_archive_values(2, "Lake")
-enum.add_archive_values(3, "Sea")
-enum.add_archive_values(4, "Canal")
-
-
-_local ft << case_field_type.new_from_archive(
-				       {"cogeco_transportation_route_type", 
-				       :ds_uint, 
-				       True, 
-				       True, 
-				       _unset, 
-				       0, 
-				       unset, 
-				       _unset, _unset})
-
-_local enum << ft.enumerator
-enum.archive_domain_class << "string"
-enum.type << "Mapping"
-
-
-enum.add_archive_values(0, "Unknown")
-enum.add_archive_values(1, "Road")
-enum.add_archive_values(2, "RailRoad")
-enum.add_archive_values(3, "Highway")
 _endproc
 $

@@ -91,7 +91,6 @@ class XLSToSWFieldManager():
             raise XLSToSWExceptions.PriorityZero ("Adding a field with priority 0??")
 
         if self.findField (p_field.className(), p_field.fieldName())==False:
-            print ("can add field " + p_field.className() + " " + p_field.fieldName())
             return True
         
         l_field = self.findField (p_field.className(), p_field.fieldName())

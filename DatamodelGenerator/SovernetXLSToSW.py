@@ -15,7 +15,8 @@ class SovernetXLSToSW():
     s_show_features_p=True
     s_magikcodewriter='not set'
 #    s_base_folder='/home/glennx/Dropbox/Sovernet/'
-    s_base_folder='e:/data/'
+    s_base_folder='e:/data/Custom Datamodel Builder/'
+    s_code_folder='C:/Users/Glenn.Nicholls/Documents/CogecoDataReaders/DatamodelGenerator/'
     
      
     s_fieldmanager=XLSToSWFieldManager.XLSToSWFieldManager()
@@ -69,8 +70,9 @@ class SovernetXLSToSW():
         if lFieldDefaultValue!='':
             lField.s_field_default_value=lFieldDefaultValue
         if lField.fieldType().lower() == "join":
-            lField.s_field_join_type=pSheet.cell_value(pRow,32)
-            lField.s_field_join_to  =pSheet.cell_value(pRow,31)
+            lField.s_field_join_type=pSheet.cell_value(pRow,29)
+            lField.s_field_join_to  =pSheet.cell_value(pRow,28)
+            print ("is a valid join " + repr(lField.isValidJoin()))
             if lField.isValidJoin()==False:
                 print ("found an invalid join ")
             
@@ -168,19 +170,21 @@ class SovernetXLSToSW():
             
     def writeCaseCallingLines (self, pCallingTexts, pCustomOnly, pFD):
         for iCallingText in pCallingTexts:
-            print ("case calling " + iCallingText)
             if operator.and_ (pCustomOnly==True, iCallingText.find("_sovernet")!=-1):
                 pFD.write (iCallingText + "(l_make_changes?, p_case_name)\n")
             if operator.and_ (pCustomOnly==False, iCallingText.find("_sovernet")==-1):
                 pFD.write (iCallingText + "(l_make_changes?, p_case_name)\n")
 
     def writeCasePreamble(self, pFD):
-        lFIn = open (self.s_base_folder + 'CasePreamble.txt', 'r')
+        lFIn = open (self.s_code_folder + 'CasePreamble.txt', 'r')
         for iline in lFIn:
             pFD.write(iline)
+#        lFIn = open (self.s_code_folder + 'CogeoCasePreamble.txt', 'r')
+#        for iline in lFIn:
+#            pFD.write(iline)
 
     def writeManualUpdatesToEnums(self, pFD):
-        lFIn = open (self.s_base_folder +'ManualUpdatesToEnums.txt', 'r')
+        lFIn = open (self.s_code_folder +'SovernetManualUpdatesToEnums.txt', 'r')
         for iline in lFIn:
             pFD.write(iline)
 
@@ -323,10 +327,10 @@ class SovernetXLSToSW():
         lEnumerators = []
     
         lEnumerators = self.parseDynamicEnumeratorsSheet(1)
-        lExternalNames = self.parseExternalNamesSheet(3)
+        lExternalNames = self.parseExternalNamesSheet(2)
         lVersion = self.getVersion()
         
-        for iSheetNumber in range (4,15):
+        for iSheetNumber in range (3,15):
             try:
                 lsheet = self.s_workbook.sheet_by_index(iSheetNumber)
                 print ('sheet ' + repr(lsheet.name))

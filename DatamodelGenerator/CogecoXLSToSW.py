@@ -14,7 +14,8 @@ class CogecoXLSToSW():
     s_workbook='not set'
     s_show_features_p=False
     s_magikcodewriter='not set'
-    s_base_folder='E:/Data/'
+    s_base_folder='E:/Data/Custom Datamodel Builder/'
+    s_code_folder='C:/Users/Glenn.Nicholls/Documents/CogecoDataReaders/DatamodelGenerator/'
     
      
     s_fieldmanager=XLSToSWFieldManager.XLSToSWFieldManager()
@@ -177,12 +178,12 @@ class CogecoXLSToSW():
                 pFD.write (iCallingText + "(l_make_changes?, p_case_name)\n")
 
     def writeCasePreamble(self, pFD):
-        lFIn = open (self.s_base_folder + 'CasePreamble.txt', 'r')
+        lFIn = open (self.s_code_folder + 'CasePreamble.txt', 'r')
         for iline in lFIn:
             pFD.write(iline)
 
     def writeManualUpdatesToEnums(self, pFD):
-        lFIn = open (self.s_base_folder +'ManualUpdatesToEnums.txt', 'r')
+        lFIn = open (self.s_code_folder +'ManualUpdatesToEnums.txt', 'r')
         for iline in lFIn:
             pFD.write(iline)
 

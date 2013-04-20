@@ -8,15 +8,15 @@ class MagikCodeWriter():
         
 
     def writeCaseUpgradeMagikCodePreamble(self, pFD):
-        pFD.write ("_global cogeco_make_case_upgrade<<\n")
+        pFD.write ("_global custom_make_case_upgrade<<\n")
         pFD.write ("_proc(_optional p_make_changes?, p_case_name)\n")
         pFD.write ("_local l_make_changes?<< p_make_changes?.default(_false)\n")
-        pFD.write ("_local l_case_view<< gis_program_manager.cached_dataset(p_case_name.default(cogeco_get_default_case_name()))\n")
+        pFD.write ("_local l_case_view<< gis_program_manager.cached_dataset(p_case_name.default(custom_get_default_case_name()))\n")
 
         
     def writeMakeJoinsMagikCodePreamble(self, pFD):
         
-        pFD.write ("_global cogeco_make_joins<<\n")
+        pFD.write ("_global custom_make_joins<<\n")
         pFD.write ("_proc (p_case_view, p_make_changes?)\n")
         pFD.write("_local make_a_join<<\n")
         pFD.write("_proc (pCaseView, pType, pParentTable, pChildTable, pMakeChanges?)\n")
@@ -57,10 +57,10 @@ class MagikCodeWriter():
         
 
     def writeCaseObjectHeader (self, pClassName, pFD, pX=12000.0, pY=12000.0):
-        lMethodName="cogeco_update_" + pClassName
+        lMethodName="custom_update_" + pClassName
         pFD.write ("_global " + lMethodName + "<<\n")
         pFD.write ("_proc ( _optional p_make_changes?, p_case_name)\n")
-        pFD.write ("_local l_case_name << p_case_name.default(cogeco_get_default_case_name())\n")
+        pFD.write ("_local l_case_name << p_case_name.default(custom_get_default_case_name())\n")
         pFD.write ("_local  l_make_changes? << p_make_changes?.default(_false)\n")
         pFD.write ("_local o, an_f, a_pred\n")
         pFD.write ("_local gpm << gis_program_manager\n")
@@ -92,9 +92,9 @@ class MagikCodeWriter():
 
     
     def writeMakeCaseSelectMagikCodePreamble(self, pFD):
-            pFD.write ("_global cogeco_case_select<<\n")
+            pFD.write ("_global custom_case_select<<\n")
             pFD.write ("_proc(_optional p_case_name)\n")
-            pFD.write ("_local l_case_name << p_case_name.default(cogeco_get_default_case_name())\n")
+            pFD.write ("_local l_case_name << p_case_name.default(custom_get_default_case_name())\n")
 
 
             pFD.write("_local lSelectCaseObject << _proc(pObjectName, pCaseName)\n")
