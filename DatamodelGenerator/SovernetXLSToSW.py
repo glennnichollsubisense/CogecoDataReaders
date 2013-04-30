@@ -7,6 +7,23 @@ import MagikCodeWriter
 import xlrd
 import operator
 
+SSHEETCOLUMN_FOREIGNTABLENAME = 2
+SSHEETCOLUMN_FOREIGNATTRIBUTENAME = 4
+SSHEETCOLUMN_FOREIGNGROUP = 7
+SSHEETCOLUMN_MAPFIELD_P = 9
+SSHEETCOLUMN_PNITABLENAME = 10
+SSHEETCOLUMN_PNITABLEEXTERNALNAME = 26
+SSHEETCOLUMN_PNIATTRIBUTENAME = 11
+SSHEETCOLUMN_PNIATTRIBUTETYPE = 13
+SSHEETCOLUMN_PNIATTRIBUTEDEFAULTVALUE = 12
+SSHEETCOLUMN_PNIATTRIBUTELENGTH = 14
+SSHEETCOLUMN_PNIATTRIBUTEPRIORITY = 28
+SSHEETCOLUMN_FEATUREPOINTDESCRIPTION = 25
+SSHEETCOLUMN_PNIJOINTYPE = 29
+SSHEETCOLUMN_PNIJOINTO = 28
+SSHEETSTARTTABNO = 3
+SSHEETENDTABNO = 16
+
 
 class SovernetXLSToSW():
 
@@ -27,35 +44,35 @@ class SovernetXLSToSW():
 
     def sheetIsACoaxSheet (self, pSheetNumber):
         lsheet = self.s_workbook.sheet_by_index(pSheetNumber)
-        lValue = lsheet.cell_value(2, 7)
+        lValue = lsheet.cell_value(2, SSHEETCOLUMN_FOREIGNGROUP)
         return lValue.lower()=='coax'
 
     def buildSWFieldComment(self, pSheet, pRow):
         lText=pSheet.cell_value (pRow, 0)
         lText=lText + ':'
-        lText=lText + pSheet.cell_value (pRow, 2)
+        lText=lText + pSheet.cell_value (pRow, SSHEETCOLUMN_FOREIGNTABLENAME)
         lText=lText + ':'
-        lText=lText + pSheet.cell_value (pRow, 4)
+        lText=lText + pSheet.cell_value (pRow, SSHEETCOLUMN_FOREIGNATTRIBUTENAME)
         return lText
     
 
     def buildSWField (self, pSheet, pRow):
-        lUsed = pSheet.cell_value(pRow,9)
+        lUsed = pSheet.cell_value(pRow,SSHEETCOLUMN_MAPFIELD_P)
         if operator.or_(lUsed.lower()=='no', lUsed.lower()=='no-temporary'):
             raise XLSToSWExceptions.FieldNotMapped(repr(pSheet) + ':' + repr(pRow))
 
         lFieldDefaultValue=''
-        lClassName = pSheet.cell_value(pRow,10)
-        lFieldName = pSheet.cell_value(pRow, 11)
-        lFieldExternalName = pSheet.cell_value(pRow,26)
-        lFieldType = pSheet.cell_value(pRow,13)
-        lFieldDefaultValue = pSheet.cell_value(pRow, 12)
-        lFieldLength = pSheet.cell_value(pRow,14)
-        # lFieldPriority = pSheet.cell_value(pRow,28)
+        lClassName = pSheet.cell_value(pRow,SSHEETCOLUMN_PNITABLENAME)
+        lFieldName = pSheet.cell_value(pRow, SSHEETCOLUMN_PNIATTRIBUTENAME)
+        lFieldExternalName = pSheet.cell_value(pRow,SSHEETCOLUMN_PNITABLEEXTERNALNAME)
+        lFieldType = pSheet.cell_value(pRow,SSHEETCOLUMN_PNIATTRIBUTETYPE)
+        lFieldDefaultValue = pSheet.cell_value(pRow, SSHEETCOLUMN_PNIATTRIBUTEDEFAULTVALUE)
+        lFieldLength = pSheet.cell_value(pRow,SSHEETCOLUMN_PNIATTRIBUTELENGTH)
+        # lFieldPriority = pSheet.cell_value(pRow,SSHEETCOLUMN_PNIATTRIBUTEPRIORITY)
         lFieldPriority = 10
         lFieldText = self.buildSWFieldComment(pSheet, pRow)
 
-        lFeaturePoint=pSheet.cell_value(pRow,25)
+        lFeaturePoint=pSheet.cell_value(pRow,SSHEETCOLUMN_FEATUREPOINTDESCRIPTION)
         if operator.and_(lFeaturePoint!="", self.s_show_features_p==True):
             print ("----------Feature " + lFeaturePoint)
 
@@ -70,8 +87,8 @@ class SovernetXLSToSW():
         if lFieldDefaultValue!='':
             lField.s_field_default_value=lFieldDefaultValue
         if lField.fieldType().lower() == "join":
-            lField.s_field_join_type=pSheet.cell_value(pRow,29)
-            lField.s_field_join_to  =pSheet.cell_value(pRow,28)
+            lField.s_field_join_type=pSheet.cell_value(pRow,SSHEETCOLUMN_PNIJOINTYPE)
+            lField.s_field_join_to  =pSheet.cell_value(pRow,SSHEETCOLUMN_PNIJOINTO)
             print ("is a valid join " + repr(lField.isValidJoin()))
             if lField.isValidJoin()==False:
                 print ("found an invalid join ")
@@ -251,72 +268,6 @@ class SovernetXLSToSW():
         pFD.write ("lSelectCaseObject(" + "'" + pObjectName + "'" + "," + "l_case_name"+ ")\n")
             
             
-    def processLandbaseWorkBook (self, pSrcFileName, pTargetFileName, pUnitTestNameStem, pDatasetName, pOriginX=2000, pOriginY=2000, pUpperTabNo=10):
-
-        loriginX=pOriginX
-        loriginY=pOriginY
-        
-        self.s_filename=self.s_base_folder + pSrcFileName
-        self.s_workbook=xlrd.open_workbook(self.s_filename)
-
-        lExternalNames = self.parseExternalNamesSheet(1)
-        lVersion = self.getVersion()
-         
-        for iSheetNumber in range (2,pUpperTabNo):
-            try:
-                lsheet = self.s_workbook.sheet_by_index(iSheetNumber)
-                print ('sheet ' + repr(lsheet.name))
-                self.parseSheet(iSheetNumber)
-            except XLSToSWExceptions.SheetIsCoax:
-                lblankcode = 0  # print ('sheet is a coax sheet' + repr(iSheetNumber))
-
-
-        lClassesManaged=self.fieldManager().classesManaged()
-        self.fieldManager().showClassesManaged()
-        lCallingLines=[]
-        
-        with open(self.s_base_folder + pTargetFileName, 'w') as lFD:
-
-            lFD.write ("# Custom Case Upgrade for " + lVersion + "\n")
-            
-            self.writeCasePreamble(lFD)
-            
-            for iClass in lClassesManaged:
-                lCallingLines.append(self.writeCaseDefinition(iClass, lFD, loriginX, loriginY))
-                loriginX=loriginX+2500
-                loriginY=loriginY+4500
-
-            self.s_magikcodewriter.writeMakeJoinsMagikCodePreamble(lFD)            
-            for iJoinField in self.fieldManager().joinFields():
-                lFD.write ('make_a_join (p_case_view, ' + '"' + iJoinField.s_field_join_type + '"' + ',' + ':' + iJoinField.className() + ',' + ':' + iJoinField.s_field_join_to + ', p_make_changes?)\n')
-            self.s_magikcodewriter.writeEndProcandDollar(lFD)
-
-            self.s_magikcodewriter.writeMakeCaseSelectMagikCodePreamble(lFD)
-            for iClass in lClassesManaged:
-                self.writeObjectSelectLine(iClass, lFD)
-            self.s_magikcodewriter.writeEndProcandDollar(lFD)
-
-            self.s_magikcodewriter.writeCaseUpgradeMagikCodePreamble(lFD)
-
-            if pUnitTestNameStem == 'CCAD_landbase':
-                lFD.write ('gMakeLandbaseEnumerators()\n')
-                
-            self.writeCaseCallingLines(lCallingLines, False, lFD)
-            lFD.write ("_if l_make_changes? _is _true\n")
-            lFD.write ("_then\n")
-            self.writeCaseCallingLines(lCallingLines, True, lFD)
-            lFD.write ("custom_make_joins(l_case_view, l_make_changes?)\n")
-            for iextname in lExternalNames:
-                lFD.write ("change_external_name(" + ":" + iextname[0] + "," + "'" + iextname[1] + "'" + "," + "'" + iextname[2] + "'" + "," + "l_case_view" + "," + "l_make_changes?" + ")\n")
-            lFD.write ("_endif\n")        
-            self.s_magikcodewriter.writeEndProcandDollar(lFD)
-
-            ltestgen = XLSToSWUnitTestGenerator.XLSToSWUnitTestGenerator(self.fieldManager(), self.s_base_folder)
-            ltestgen.writeUnitTests (lExternalNames, pUnitTestNameStem, pDatasetName)
-        
-        lFD.closed
-    
-        
         
 
     def processMainDBWorkBook (self, pFileName):
@@ -330,7 +281,7 @@ class SovernetXLSToSW():
         lExternalNames = self.parseExternalNamesSheet(2)
         lVersion = self.getVersion()
         
-        for iSheetNumber in range (3,16):
+        for iSheetNumber in range (SSHEETSTARTTABNO, SSHEETENDTABNO):
             try:
                 lsheet = self.s_workbook.sheet_by_index(iSheetNumber)
                 print ('sheet ' + repr(lsheet.name))

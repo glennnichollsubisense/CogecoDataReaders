@@ -31,6 +31,7 @@ class XLSToSWField():
         self.s_field_name=pfieldname
         self.s_field_type=pfieldtype
         self.s_field_length=0
+        self.s_field_comment = ""
 
 
 
@@ -168,7 +169,7 @@ class XLSToSWField():
         
     def showMe(self):
         print ('--------')
-        print (self.className() + ":" + self.fieldName() + ":" + self.fieldExternalName() + ":" + self.fieldType() + ":" + repr(self.fieldLength()) + ":" + self.fieldUnit()  + ":" + repr(self.fieldPriority()))
+        print (self.className() + ":" + self.fieldName() + ":" + self.fieldExternalName() + ":" + self.fieldType() + ":" + repr(self.fieldLength()) + ":" + self.fieldUnit()  + ":" + repr(self.fieldPriority()) + ":" + repr(self.fieldComment()))
         if self.__isJoin():
             print (self.s_field_join_type + ":" + self.s_field_join_to)
         print ('--------')
