@@ -194,7 +194,7 @@ class SovernetXLSToSW():
         for iClassName in self.fieldManager().classesManaged():
             for iField in self.fieldManager().findFieldsForClass(iClassName):
                 if iField.isEnumField():
-                    	pFD.write ('sovernet_make_enum_use (' + ':' + iField.fieldType() + ',' + ':' + iField.className() + ',' + ':' + iField.fieldName() + ',p_make_changes?)\n')
+                    	pFD.write ('custom_make_enum_use (' + ':' + iField.fieldType() + ',' + ':' + iField.className() + ',' + ':' + iField.fieldName() + ',p_make_changes?)\n')
         pFD.write ("gis_program_manager.cached_dataset(:dynamic_enumerator).commit()\n")            	
         pFD.write ("_endproc\n")
 
@@ -330,7 +330,7 @@ class SovernetXLSToSW():
         lExternalNames = self.parseExternalNamesSheet(2)
         lVersion = self.getVersion()
         
-        for iSheetNumber in range (3,15):
+        for iSheetNumber in range (3,16):
             try:
                 lsheet = self.s_workbook.sheet_by_index(iSheetNumber)
                 print ('sheet ' + repr(lsheet.name))
