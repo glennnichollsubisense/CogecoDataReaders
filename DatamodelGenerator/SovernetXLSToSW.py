@@ -22,7 +22,7 @@ SSHEETCOLUMN_FEATUREPOINTDESCRIPTION = 25
 SSHEETCOLUMN_PNIJOINTYPE = 29
 SSHEETCOLUMN_PNIJOINTO = 28
 SSHEETSTARTTABNO = 3
-SSHEETENDTABNO = 16
+SSHEETENDTABNO = 17
 
 
 class SovernetXLSToSW():
@@ -359,4 +359,4 @@ if __name__== "__main__":
     lXLSToSW = SovernetXLSToSW()
 
     lXLSToSW.resetFieldManager()
-    lXLSToSW.processMainDBWorkBook ('Data Model Mapping 0412.xls')
+    lXLSToSW.processMainDBWorkBook ('Data Model Mapping v2.xls')
