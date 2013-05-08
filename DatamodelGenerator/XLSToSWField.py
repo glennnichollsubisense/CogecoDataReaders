@@ -160,8 +160,8 @@ class XLSToSWField():
         else:
             return repr(lLength) + '.floor'
 
-    def isPNIField(self):
-        if operator.and_(self.className().find('sovernet')==-1, self.fieldName().find('sovernet')==-1):
+    def isPNIField(self, pIdentifier):
+        if operator.and_(self.className().find(pIdentifier)==-1, self.fieldName().find(pIdentifier)==-1):
             return True
 
         return False
