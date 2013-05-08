@@ -1,0 +1,32 @@
+
+_global custom_miscellaneous_changes<<
+_proc (pCaseView, pMakechanges?)
+
+       ## This method contains the code that is added manually to complete the installation
+       ## Typically it will contain manual changes to existing PNI enumerators, or making fields non-mandatory.
+
+#	_local l_id_fields << {
+#				      :building_id,
+#				      :pole_id,
+#				      :sheath_id,
+#				      :underground_route_id,
+#				      :uub_id
+#			      }
+#	_local l_pred << predicate.eq(:name, :cl_migration_attributes)
+#	_local l_migration_attributes << pCaseView.collections[:sw_gis!case_object].select(l_pred).an_element()
+#
+#	_for i_id_field _over l_id_fields.fast_elements()
+#	_loop
+#		_local lInfoString<<"Made cl_migration_attributes." + i_id_field.write_string + " not mandatory" 
+#		_local l_field << l_migration_attributes.get_field(i_id_field)
+#		_if pMakechanges?
+#		_then
+#			l_field.mandatory?<< _false
+#		_else
+#			lInfoString<< ''.concatenation ('!! NOT WRITING:: ', lInfoString)
+#		_endif
+#		write (lInfoString)
+#	_endloop
+	
+_endproc
+$
