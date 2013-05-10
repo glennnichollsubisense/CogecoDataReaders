@@ -16,9 +16,11 @@ class XLSToSWField():
     s_field_join_to=''
     s_field_priority=99
     s_field_default_value=''
+    s_field_from_table=''
+    s_field_from_field=''
     
     s_valid_field_types=['ds_date', 'ds_uint', 'ds_float', 'ds_bool', 'ds_char16canon_vec', 'ds_char16_vec', 'join', 'simple_area', 'simple_point', 'simple_chain', 'chain', 'point', 'sys_id', 'text', 'ds_int']
-    s_valid_enumerator_names=['alt_transportation_type', 'anchor_type', 'conduit_color', 'drop_type', 'figure_eight_type', 'material_type', 'mit_hub_type', 'pole_usage', 'splice_method_type', 'waterway_type']
+    s_valid_enumerator_names=['alt_transportation_type', 'anchor_type', 'conduit_color', 'construction_status_type_type', 'drop_type', 'figure_eight_type', 'material_type', 'mit_hub_type', 'pole_usage', 'splice_method_type', 'waterway_type']
     
     def __init__(self, pclassname='', pfieldname='', pfieldtype=''):
         
@@ -61,6 +63,12 @@ class XLSToSWField():
 
     def fieldDefaultValue(self):
         return self.s_field_default_value
+
+    def fieldFromTable(self):
+        return self.s_field_from_table
+
+    def fieldFromField(self):
+        return self.s_field_from_field
 
     def isValidType(self):
 
@@ -172,6 +180,7 @@ class XLSToSWField():
         print (self.className() + ":" + self.fieldName() + ":" + self.fieldExternalName() + ":" + self.fieldType() + ":" + repr(self.fieldLength()) + ":" + self.fieldUnit()  + ":" + repr(self.fieldPriority()) + ":" + repr(self.fieldComment()))
         if self.__isJoin():
             print (self.s_field_join_type + ":" + self.s_field_join_to)
+        print ('*** FROM ***' + self.fieldFromTable() + '.' + self.fieldFromField())
         print ('--------')
         
 

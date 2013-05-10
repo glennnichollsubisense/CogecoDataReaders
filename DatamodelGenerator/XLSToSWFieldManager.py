@@ -59,6 +59,15 @@ class XLSToSWFieldManager():
                 lClassFields.append(iField)
         return lClassFields
 
+    def findMappingsFromSourceTable (self, pSourceTableName):
+        lFields = []
+        for iField in self.s_fields:
+            if (iField.fieldFromTable().lower()==pSourceTableName.lower()):
+                lFields.append(iField)
+        return lFields
+        
+        
+
 
     def strClashingNames(self, pBaseproblem, pThisObject, pThatObject):
         lStr = pBaseproblem + ' :'
