@@ -178,9 +178,10 @@ class XLSToSWField():
     def showMe(self):
         print ('--------')
         print (self.className() + ":" + self.fieldName() + ":" + self.fieldExternalName() + ":" + self.fieldType() + ":" + repr(self.fieldLength()) + ":" + self.fieldUnit()  + ":" + repr(self.fieldPriority()) + ":" + repr(self.fieldComment()))
+        if self.fieldDefaultValue()!='':
+            print ('Default Value defined ' + self.fieldDefaultValue())
         if self.__isJoin():
             print (self.s_field_join_type + ":" + self.s_field_join_to)
-        print ('*** FROM ***' + self.fieldFromTable() + '.' + self.fieldFromField())
         print ('--------')
         
 
